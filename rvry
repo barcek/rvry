@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# rvry v 1.0.0
+# ©2022 barcek
+# License: MIT
+# @ github.com
+# /barcek/rvry
+
+mark=.
+path=0
+beat=1
+sign=q
+
+heed() {
+  read -t $beat -N 1 char
+  if [ $sign == "$char" ]; then
+    wake
+  fi
+}
+
+step() {
+  echo -n $mark
+  ((path++))
+}
+
+wake() {
+  secs=$((path*$beat))
+  time=$(printf "%02d:%02d:%02d" $(($secs%86400/3600)) $(($secs%3600/60)) $(($secs%60)))
+  echo -e "\033[2K\r${time}"
+  exit 1
+}
+
+trap "wake" SIGINT
+
+while [ true ]; do
+  heed
+  step
+done
