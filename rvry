@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.0.0
+# rvry v 1.1.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -10,6 +10,15 @@ mark=.
 path=0
 beat=1
 sign=q
+
+if ! [ -z "$1" ]; then
+  tag=$1
+fi
+
+if ! [ -z "$2" ]; then
+  log=$2
+  dt0=$(date)
+fi
 
 heed() {
   read -t $beat -N 1 char
@@ -23,10 +32,31 @@ step() {
   ((path++))
 }
 
-wake() {
+form() {
   secs=$((path*$beat))
-  time=$(printf "%02d:%02d:%02d" $(($secs%86400/3600)) $(($secs%3600/60)) $(($secs%60)))
-  echo -e "\033[2K\r${time}"
+  view=$(printf "%02d:%02d:%02d" $(($secs%86400/3600)) $(($secs%3600/60)) $(($secs%60)))
+  if [ -n "$tag" ]; then
+    view+=" ${tag}"
+  fi
+  echo "${view}"
+}
+
+keep() {
+  if [ -n "$log" ]; then
+    echo $dt0 $1 >> $log
+  fi
+}
+
+show() {
+  wipe="\033[2K\r"
+  echo -ne $wipe
+  echo $1
+}
+
+wake() {
+  view=$(form)
+  keep "$view"
+  show "$view"
   exit 1
 }
 
