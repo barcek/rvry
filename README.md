@@ -2,7 +2,29 @@
 
 Mark time passing in the terminal.
 
-By default prints one dot per second, and when stopped with `q` or `Ctrl-C` shows the time elapsed.
+By default prints one dot per second, and when stopped with `q` or `Ctrl-C` shows the time elapsed. Can be passed an optional tag to label the duration and a path for logging the whole, with the date and time, to a file.
+
+## Why?
+
+To track the durations of regular activities, see a measure of time taken on a task so far or zone out with a subtle visual beat.
+
+## How?
+
+The `rvry` command can be run alone to show the time elapsed as its final output.
+
+A string to label the final output can be passed as the first argument:
+
+```shell
+rvry "task name"
+```
+
+The path to a log file can be passed as the second:
+
+```shell
+rvry "task name" path/to/log
+```
+
+Each log entry is a start datetime stamp, the duration and the tag.
 
 ## Script
 
