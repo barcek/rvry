@@ -6,10 +6,17 @@
 # @ github.com
 # /barcek/rvry
 
-mark=.
-path=0
-beat=1
-sign=q
+# loop listening for $beat seconds for $sign key pressed,
+# printing $mark and incrementing $path by one each time,
+# calling wake if pressed or SIGINT (Ctrl-C) received to
+# print duration, any $tag and with datetime to any $log
+
+mark=. # characters printed
+path=0 # initial step count
+beat=1 # secs between steps
+sign=q # key pressed to end
+
+# use any optional args present
 
 if ! [ -z "$1" ]; then
   tag=$1
@@ -19,6 +26,8 @@ if ! [ -z "$2" ]; then
   log=$2
   dt0=$(date)
 fi
+
+# define primary loop functions
 
 heed() {
   read -t $beat -N 1 char
@@ -31,6 +40,8 @@ step() {
   echo -n $mark
   ((path++))
 }
+
+# define wake process functions
 
 form() {
   secs=$((path*$beat))
@@ -59,6 +70,8 @@ wake() {
   show "$view"
   exit 1
 }
+
+# initiate
 
 trap "wake" SIGINT
 
