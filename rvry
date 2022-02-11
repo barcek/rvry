@@ -6,10 +6,10 @@
 # @ github.com
 # /barcek/rvry
 
-# loop listening for $beat seconds for $sign key pressed,
-# printing $mark and incrementing $path by one each time,
-# calling wake if pressed or SIGINT (Ctrl-C) received to
-# print duration, any $tag and with datetime to any $log
+# loops, waiting for $beat seconds for use of the $sign key,
+# printing one $mark and incrementing $path by 1 each cycle;
+# if either $sign or Ctrl-C is pressed, prints the duration
+# w/ any $tag, and if any $log appends all w/ a start stamp
 
 mark=. # characters printed
 path=0 # initial step count
