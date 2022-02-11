@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.1.1
+# rvry v 1.2.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -16,7 +16,12 @@ path=0 # initial step count
 beat=1 # secs between steps
 sign=q # key pressed to end
 
-# use any optional args present
+# handle any arguments provided
+
+if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+  echo "Usage: rvry [tag [log] / --help/-h]"
+  exit 1
+fi
 
 if ! [ -z "$1" ]; then
   tag=$1
