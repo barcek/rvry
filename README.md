@@ -32,8 +32,13 @@ The script can be run with the command `./rvry` while in the same directory, and
 
 The hashbang at the top of the file assumes the presence of Bash.
 
+### Defaults
+
+The core default values are defined close to the top of the source file. The characters printed at each step are assigned to `mark`, the initial step count to `path`, the number of seconds between each step to `beat` and the key pressed to end the script to `sign`.
+
 ## Options
 
-The following can be passed to `rvry` in place of the tag and log arguments:
+The following can be passed to `rvry` before the tag and log arguments:
 
-- `--help` / `-h`, for usage
+- `--help` / `-h`, to show usage then exit
+- `--deep` / `-d`, to omit the printing of `mark`
