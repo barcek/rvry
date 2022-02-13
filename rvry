@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.2.0
+# rvry v 1.3.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -23,6 +23,11 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   exit 1
 fi
 
+if [ "$1" == "--deep" ] || [ "$1" == "-d" ]; then
+  mark=""
+  shift
+fi
+
 if ! [ -z "$1" ]; then
   tag=$1
 fi
@@ -42,7 +47,9 @@ heed() {
 }
 
 step() {
-  echo -n $mark
+  if [ -n "$mark" ]; then
+    echo -n $mark
+  fi
   ((path++))
 }
 
