@@ -43,3 +43,4 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--help` / `-h`, to show usage then exit
 - `--deep` / `-d`, to omit the printing of `mark`
 - `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
+- `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
