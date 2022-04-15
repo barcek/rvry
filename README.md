@@ -44,3 +44,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--deep` / `-d`, to omit the printing of `mark`
 - `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
+
+## Piping
+
+If the output of `rvry` is piped to another process, the character(s) marking each step are not printed. The final output only is passed - and logged to file if applicable - as usual once the key to end the script has been pressed.
