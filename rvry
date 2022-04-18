@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.5.0
+# rvry v 1.6.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -18,7 +18,7 @@ sign=q # key pressed to end
 
 # handle any arguments provided
 
-usage="Usage: rvry [--help/-h / [--deep/-d | --beat/-b <secs> | --mark/-m <char(s)>] [tag [log]]"
+usage="Usage: rvry [--help/-h / [--deep/-d | --beat/-b <secs> | --path/-p <steps> | --mark/-m <char(s)>] [tag [log]]"
 arg_i=1
 
 while (( $arg_i <= ${#} )); do
@@ -35,6 +35,11 @@ while (( $arg_i <= ${#} )); do
   elif [ "${@: $arg_i:1}" == "--beat" ] || [ "${@: $arg_i:1}" == "-b" ]; then
     # set $beat to the value of the next argument
     beat=${@: $arg_i+1:1}
+    ((arg_i++))
+
+  elif [ "${@: $arg_i:1}" == "--path" ] || [ "${@: $arg_i:1}" == "-p" ]; then
+    # set $path to the value of the next argument
+    path=${@: $arg_i+1:1}
     ((arg_i++))
 
   elif [ "${@: $arg_i:1}" == "--mark" ] || [ "${@: $arg_i:1}" == "-m" ]; then
