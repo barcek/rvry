@@ -28,7 +28,7 @@ Each log entry is a start datetime stamp, the duration and the tag.
 
 ## Script
 
-The script can be run with the command `./rvry` while in the same directory, and from elsewhere using the pattern `path/to/rvry`. It can be run from any directory with `rvry` by a) placing it in the '/bin' or '/usr/bin' directory and b) making it executable, if not already, with `chmod+x rvry`.
+The script can be run with the command `./rvry` while in the same directory, and from elsewhere using the pattern `path/to/rvry`, by first making it executable, if not already, with `chmod +x rvry`. Once executable, it can be run from any directory with the simpler `rvry` by placing it in the '/bin' or '/usr/bin' directory.
 
 The hashbang at the top of the file assumes the presence of Bash.
 
