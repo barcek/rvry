@@ -40,11 +40,12 @@ The core default values are defined close to the top of the source file. The cha
 
 The following can be passed to `rvry` before the tag and log arguments:
 
-- `--help` / `-h`, to show usage then exit
 - `--deep` / `-d`, to omit the printing of `mark`
 - `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
 - `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
+- `--help` / `-h`, to show usage then exit
+- `--version` / `-v`, to show name and version number then exit
 
 ## Piping
 
