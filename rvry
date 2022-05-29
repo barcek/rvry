@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.6.0
+# rvry v 1.7.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -18,7 +18,7 @@ sign=q # key pressed to end
 
 # handle any arguments provided
 
-usage="Usage: rvry [--help/-h / [--deep/-d | --beat/-b <secs> | --path/-p <steps> | --mark/-m <char(s)>] [tag [log]]"
+usage="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --mark/-m <char(s)>] [tag [log]] / --help/-h / --version/-v]"
 arg_i=1
 
 while (( $arg_i <= ${#} )); do
@@ -26,6 +26,13 @@ while (( $arg_i <= ${#} )); do
   if [ "${@: $arg_i:1}" == "--help" ] || [ "${@: $arg_i:1}" == "-h" ]; then
     # show usage then exit
     echo $usage
+    exit 1
+
+  elif [ "${@: $arg_i:1}" == "--version" ] || [ "${@: $arg_i:1}" == "-v" ]; then
+    # show name and version then exit
+    cd "${0%/*}"
+    v=$(head -n 3 rvry | tail -n 1)
+    echo ${v:2:12}
     exit 1
 
   elif [ "${@: $arg_i:1}" == "--deep" ] || [ "${@: $arg_i:1}" == "-d" ]; then
