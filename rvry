@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.7.1
+# rvry v 1.8.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -16,6 +16,13 @@ path=0 # initial step count
 beat=1 # secs between steps
 sign=q # key pressed to end
 
+# define error handler
+
+handle_failure() {
+  echo "$1"
+  exit 1
+}
+
 # handle any arguments provided
 
 usage="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --mark/-m <char(s)>] [tag [log]] / --help/-h / --version/-v]"
@@ -29,10 +36,10 @@ while (( $arg_i <= ${#} )); do
     exit 0
 
   elif [ "${@: $arg_i:1}" == "--version" ] || [ "${@: $arg_i:1}" == "-v" ]; then
-    # show name and version then exit
-    cd "${0%/*}"
+    # show name and version number then exit
+    cd "${0%/*}" || handle_failure "Unable to handle option for flag '${@: $arg_i:1}'"
     v=$(head -n 3 rvry | tail -n 1)
-    echo ${v:2:12}
+    echo "${v:2:12}"
     exit 0
 
   elif [ "${@: $arg_i:1}" == "--deep" ] || [ "${@: $arg_i:1}" == "-d" ]; then
@@ -61,12 +68,12 @@ while (( $arg_i <= ${#} )); do
   ((arg_i++))
 done
 
-if ! [ -z "${@: $arg_i:1}" ]; then
+if [ -n "${@: $arg_i:1}" ]; then
   # set $tag to label the final output
   tag=${@: $arg_i:1}
 fi
 
-if ! [ -z "${@: $arg_i+1:1}" ]; then
+if [ -n "${@: $arg_i+1:1}" ]; then
   # set $log to append with a start datetime stamp $dt0,
   # the duration and $tag; cf. wake process functions
   log=${@: $arg_i+1:1}
@@ -77,7 +84,7 @@ fi
 
 heed() {
   read -t $beat -N 1 char
-  if [ $sign == "$char" ]; then
+  if [ "$sign" == "$char" ]; then
     wake
   fi
 }
@@ -110,14 +117,14 @@ form() {
 
 keep() {
   if [ -n "$log" ]; then
-    echo $dt0 $1 >> $log
+    echo "$dt0 $1" >> "$log"
   fi
 }
 
 show() {
   wipe="\033[2K\r"
-  echo -ne $wipe
-  echo $1
+  echo -ne "$wipe"
+  echo "$1"
 }
 
 wake() {
@@ -131,7 +138,7 @@ wake() {
 
 trap "wake" SIGINT
 
-while [ true ]; do
+while true; do
   heed
   step
 done
