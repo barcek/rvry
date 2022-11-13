@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.7.0
+# rvry v 1.7.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -26,14 +26,14 @@ while (( $arg_i <= ${#} )); do
   if [ "${@: $arg_i:1}" == "--help" ] || [ "${@: $arg_i:1}" == "-h" ]; then
     # show usage then exit
     echo $usage
-    exit 1
+    exit 0
 
   elif [ "${@: $arg_i:1}" == "--version" ] || [ "${@: $arg_i:1}" == "-v" ]; then
     # show name and version then exit
     cd "${0%/*}"
     v=$(head -n 3 rvry | tail -n 1)
     echo ${v:2:12}
-    exit 1
+    exit 0
 
   elif [ "${@: $arg_i:1}" == "--deep" ] || [ "${@: $arg_i:1}" == "-d" ]; then
     # omit the printing of $mark; cf. function step
@@ -124,7 +124,7 @@ wake() {
   view=$(form)
   keep "$view"
   show "$view"
-  exit 1
+  exit 0
 }
 
 # initiate
