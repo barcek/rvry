@@ -34,7 +34,7 @@ The hashbang at the top of the file assumes the presence of Bash.
 
 ### Defaults
 
-The core default values are defined close to the top of the source file. The character(s) printed at each step are assigned to `mark` (currently '.'), the initial step count to `path` (0), the number of seconds between each step to `beat` (1) and the key pressed to end the script to `sign` ('q').
+The core default values are defined close to the top of the source file. The character(s) printed at each step are assigned to `mark` (currently '.'), the initial step count to `path` (0), the number of seconds between each step to `beat` (1), the key pressed to end the script to `sign` ('q') and the number of steps at which to end automatically, if greater than zero only, to `edge` (0, i.e. no automatic end).
 
 ## Options
 
@@ -43,6 +43,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--deep` / `-d`, to omit the printing of `mark`
 - `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
 - `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
+- `--edge` / `-e`, to set `edge` to the value of the next argument, e.g. to 15 steps with `-e 15`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
 - `--help` / `-h`, to show usage then exit
 - `--version` / `-v`, to show name and version number then exit
