@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.8.0
+# rvry v 1.9.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -8,12 +8,14 @@
 
 # loops, waiting for $beat seconds for use of the $sign key,
 # printing one $mark and incrementing $path by 1 each cycle;
-# if either $sign or Ctrl-C is pressed, prints the duration
+# if either an $edge set to greater than 0 steps is reached
+# or either $sign or Ctrl-C is pressed, prints the duration
 # w/ any $tag, and if any $log appends all w/ a start stamp
 
 mark=. # characters printed
 path=0 # initial step count
 beat=1 # secs between steps
+edge=0 # if >0, steps taken
 sign=q # key pressed to end
 
 # define error handler
@@ -25,7 +27,7 @@ handle_failure() {
 
 # handle any arguments provided
 
-usage="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --mark/-m <char(s)>] [tag [log]] / --help/-h / --version/-v]"
+usage="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>] [tag [log]] / --help/-h / --version/-v]"
 arg_i=1
 
 while (( $arg_i <= ${#} )); do
@@ -54,6 +56,11 @@ while (( $arg_i <= ${#} )); do
   elif [ "${@: $arg_i:1}" == "--path" ] || [ "${@: $arg_i:1}" == "-p" ]; then
     # set $path to the value of the next argument
     path=${@: $arg_i+1:1}
+    ((arg_i++))
+
+  elif [ "${@: $arg_i:1}" == "--edge" ] || [ "${@: $arg_i:1}" == "-e" ]; then
+    # set $edge to the value of the next argument
+    edge=${@: $arg_i+1:1}
     ((arg_i++))
 
   elif [ "${@: $arg_i:1}" == "--mark" ] || [ "${@: $arg_i:1}" == "-m" ]; then
@@ -94,6 +101,11 @@ step() {
     echo -n "${mark}"
   fi
   ((path++))
+}
+
+pass() {
+  heed
+  step
 }
 
 # define wake process functions
@@ -138,7 +150,13 @@ wake() {
 
 trap "wake" SIGINT
 
-while true; do
-  heed
-  step
-done
+if (( 0 == $edge )); then
+  while true; do
+    pass
+  done
+else
+  while (( $path < $edge )); do
+    pass
+  done
+  wake
+fi
