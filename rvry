@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.9.0
+# rvry v 1.9.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -32,45 +32,55 @@ arg_i=1
 
 while (( $arg_i <= ${#} )); do
 
-  if [ "${@: $arg_i:1}" == "--help" ] || [ "${@: $arg_i:1}" == "-h" ]; then
-    # show usage then exit
-    echo $usage
-    exit 0
+  case "${@: $arg_i:1}" in
 
-  elif [ "${@: $arg_i:1}" == "--version" ] || [ "${@: $arg_i:1}" == "-v" ]; then
-    # show name and version number then exit
-    cd "${0%/*}" || handle_failure "Unable to handle option for flag '${@: $arg_i:1}'"
-    v=$(head -n 3 rvry | tail -n 1)
-    echo "${v:2:12}"
-    exit 0
+    "--help"|"-h")
+      # show usage then exit
+      echo $usage
+      exit 0
+      ;;
 
-  elif [ "${@: $arg_i:1}" == "--deep" ] || [ "${@: $arg_i:1}" == "-d" ]; then
-    # omit the printing of $mark; cf. function step
-    mark=""
+    "--version"|"-v")
+      # show name and version number then exit
+      cd "${0%/*}" || handle_failure "Unable to handle option for flag '${@: $arg_i:1}'"
+      v=$(head -n 3 rvry | tail -n 1)
+      echo "${v:2:12}"
+      exit 0
+      ;;
 
-  elif [ "${@: $arg_i:1}" == "--beat" ] || [ "${@: $arg_i:1}" == "-b" ]; then
-    # set $beat to the value of the next argument
-    beat=${@: $arg_i+1:1}
-    ((arg_i++))
+    "--deep"|"-d")
+      # omit the printing of $mark; cf. function step
+      mark=""
+      ;;
 
-  elif [ "${@: $arg_i:1}" == "--path" ] || [ "${@: $arg_i:1}" == "-p" ]; then
-    # set $path to the value of the next argument
-    path=${@: $arg_i+1:1}
-    ((arg_i++))
+    "--beat"|"-b")
+      # set $beat to the value of the next argument
+      beat=${@: $arg_i+1:1}
+      ((arg_i++))
+      ;;
 
-  elif [ "${@: $arg_i:1}" == "--edge" ] || [ "${@: $arg_i:1}" == "-e" ]; then
-    # set $edge to the value of the next argument
-    edge=${@: $arg_i+1:1}
-    ((arg_i++))
+    "--path"|"-p")
+      # set $path to the value of the next argument
+      path=${@: $arg_i+1:1}
+      ((arg_i++))
+      ;;
 
-  elif [ "${@: $arg_i:1}" == "--mark" ] || [ "${@: $arg_i:1}" == "-m" ]; then
-    # set $mark to the value of the next argument
-    mark="${@: $arg_i+1:1}"
-    ((arg_i++))
+    "--edge"|"-e")
+      # set $edge to the value of the next argument
+      edge=${@: $arg_i+1:1}
+      ((arg_i++))
+      ;;
 
-  else
-    break
-  fi
+    "--mark"|"-m")
+      # set $mark to the value of the next argument
+      mark="${@: $arg_i+1:1}"
+      ((arg_i++))
+      ;;
+
+    *)
+      break
+      ;;
+  esac
 
   ((arg_i++))
 done
