@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v 1.9.1
+# rvry v 1.9.2
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -21,7 +21,7 @@ sign=q # key pressed to end
 # define error handler
 
 handle_failure() {
-  echo "$1"
+  echo "$1" >&2
   exit 1
 }
 
