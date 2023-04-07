@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.10.0
+# rvry v1.11.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -20,7 +20,7 @@ sign=q # key pressed to end
 
 # define error handler
 
-handle_failure() {
+jolt() {
   echo "$1" >&2
   exit 1
 }
@@ -29,6 +29,8 @@ handle_failure() {
 
 usage="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>] [tag [log]] / --help/-h / --version/-v]"
 arg_i=1
+
+slips=()
 
 while (( $arg_i <= ${#} )); do
 
@@ -42,7 +44,7 @@ while (( $arg_i <= ${#} )); do
 
     "--version"|"-v")
       # show name and version number then exit
-      cd "${0%/*}" || handle_failure "Unable to handle option for flag '${@: $arg_i:1}'"
+      cd "${0%/*}" || jolt "Unable to handle option for flag '${@: $arg_i:1}'"
       v=$(head -n 3 rvry | tail -n 1)
       echo "${v:2:12}"
       exit 0
@@ -78,7 +80,8 @@ while (( $arg_i <= ${#} )); do
       ;;
 
     --*|-*)
-      handle_failure "No option for flag '${@: $arg_i:1}'"
+      # extend $slips with flag
+      slips+=("'${@: $arg_i:1}'")
       ;;
 
     *)
@@ -88,6 +91,17 @@ while (( $arg_i <= ${#} )); do
 
   ((arg_i++))
 done
+
+slips_n=${#slips[@]}
+
+if (( $slips_n > 0 )); then
+  root="No option for flag"
+  case $slips_n in
+    1) jolt "$root $slips";;
+    2) jolt "$root ${slips[0]} or ${slips[1]}";;
+    *) jolt "$root $(echo ${slips[@]: 0:${#slips[@]}-1} | sed 's/ /, /g') or ${slips[${#slips[@]}-1]}";;
+  esac
+fi
 
 if [ -n "${@: $arg_i:1}" ]; then
   # set $tag to label the final output
