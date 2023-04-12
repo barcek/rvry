@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.11.0
+# rvry v1.11.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -18,6 +18,13 @@ beat=1 # secs between steps
 edge=0 # if >0, steps taken
 sign=q # key pressed to end
 
+# set help text
+
+usage_ln_1="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>] [tag [log]]"
+usage_ln_2="            / --help/-h / --version/-v]"
+
+help_text="${usage_ln_1}\n${usage_ln_2}"
+
 # define error handler
 
 jolt() {
@@ -27,9 +34,7 @@ jolt() {
 
 # handle any arguments provided
 
-usage="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>] [tag [log]] / --help/-h / --version/-v]"
 arg_i=1
-
 slips=()
 
 while (( $arg_i <= ${#} )); do
@@ -37,8 +42,8 @@ while (( $arg_i <= ${#} )); do
   case "${@: $arg_i:1}" in
 
     "--help"|"-h")
-      # show usage then exit
-      echo $usage
+      # show help text then exit
+      echo -e "$help_text"
       exit 0
       ;;
 
