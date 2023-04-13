@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.11.1
+# rvry v1.12.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -10,7 +10,8 @@
 # printing one $mark and incrementing $path by 1 each cycle;
 # if either an $edge set to greater than 0 steps is reached
 # or either $sign or Ctrl-C is pressed, prints the duration
-# w/ any $tag, and if any $log appends all w/ a start stamp
+# w/ any $tag, and if any $log appends all w/ a start stamp,
+# then if any $task runs it
 
 mark=. # characters printed
 path=0 # initial step count
@@ -20,8 +21,8 @@ sign=q # key pressed to end
 
 # set help text
 
-usage_ln_1="Usage: rvry [[--deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>] [tag [log]]"
-usage_ln_2="            / --help/-h / --version/-v]"
+usage_ln_1="Usage: rvry [ [ --deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>"
+usage_ln_2="                --task/-t <cmd> ] [tag [log]] / --help/-h / --version/-v ]"
 
 help_text="${usage_ln_1}\n${usage_ln_2}"
 
@@ -81,6 +82,12 @@ while (( $arg_i <= ${#} )); do
     "--mark"|"-m")
       # set $mark to the value of the next argument
       mark="${@: $arg_i+1:1}"
+      ((arg_i++))
+      ;;
+
+    "--task"|"-t")
+      # set $task to the value of the next argument
+      task="${@: $arg_i+1:1}"
       ((arg_i++))
       ;;
 
@@ -172,10 +179,19 @@ show() {
   echo "$1"
 }
 
+call() {
+  if [ -z "$task" ]; then
+    return
+  fi
+  echo "$task"
+  bash -c "$task"
+}
+
 wake() {
   view=$(form)
   keep "$view"
   show "$view"
+  call
   exit 0
 }
 
