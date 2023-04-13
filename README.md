@@ -2,11 +2,11 @@
 
 Mark time passing in the terminal.
 
-By default prints one dot per second, and when stopped with `q` or `Ctrl-C` shows the time elapsed. Can be passed an optional tag to label the duration and a path for logging the whole, with the date and time, to a file.
+By default prints one dot per second, and when stopped with `q` or `Ctrl-C` shows the time elapsed. Can be passed a tag to label the duration and a path to log the whole with date and time to a file, plus a Bash command to be run on completion.
 
 ## Why?
 
-To track the durations of regular activities, see a measure of time taken on a task so far or zone out with a subtle visual beat.
+To track the durations of regular activities, see a measure of time taken on a task so far, or delay one, or zone out with a subtle visual beat.
 
 ## How?
 
@@ -25,6 +25,8 @@ rvry "task name" path/to/log
 ```
 
 Each log entry is a start datetime stamp, the duration and the tag.
+
+Several options are available (see [Options](#options) below), including the use of a Bash command on completion.
 
 ## Script
 
@@ -45,6 +47,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
 - `--edge` / `-e`, to set `edge` to the value of the next argument, e.g. to 15 steps with `-e 15`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
+- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`
 - `--help` / `-h`, to show usage then exit
 - `--version` / `-v`, to show name and version number then exit
 
