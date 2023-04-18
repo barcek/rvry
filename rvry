@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.13.0
+# rvry v1.13.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -22,7 +22,7 @@ sign=q # key pressed to end
 # set help text
 
 usage_ln_1="Usage: rvry [ [ --deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>"
-usage_ln_2="                --task/-t <cmd> ] [tag [log]] / --help/-h / --version/-v ]"
+usage_ln_2="                --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
 
 help_text="${usage_ln_1}\n${usage_ln_2}"
 
@@ -97,7 +97,7 @@ while (( $arg_i <= ${#} )); do
       ;;
 
     --*|-*)
-      # extend $slips with flag
+      # extend $slips with unavailable flag
       slips+=("'${@: $arg_i:1}'")
       ;;
 
@@ -112,6 +112,7 @@ done
 slips_n=${#slips[@]}
 
 if (( $slips_n > 0 )); then
+  # produce one error for all flags
   root="No option for flag"
   case $slips_n in
     1) jolt "$root $slips";;
@@ -126,8 +127,9 @@ if [ -n "${@: $arg_i:1}" ]; then
 fi
 
 if [ -n "${@: $arg_i+1:1}" ]; then
-  # set $log to append with a start datetime stamp $dt0,
-  # the duration and $tag; cf. wake process functions
+  # set $log output path and start datetime stamp $dt0
+  # to be persisted with duration and $tag;
+  # cf. wake process functions
   log=${@: $arg_i+1:1}
   dt0=$(date)
 fi
