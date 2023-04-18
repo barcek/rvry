@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.13.1
+# rvry v1.14.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -127,7 +127,7 @@ if [ -n "${@: $arg_i:1}" ]; then
 fi
 
 if [ -n "${@: $arg_i+1:1}" ]; then
-  # set $log output path and start datetime stamp $dt0
+  # set $log file path and start datetime stamp $dt0
   # to be persisted with duration and $tag;
   # cf. wake process functions
   log=${@: $arg_i+1:1}
@@ -174,31 +174,33 @@ form() {
   echo "${view}"
 }
 
-keep() {
-  if [ -n "$log" ]; then
-    echo "$dt0 $1" >> "$log"
-  fi
-}
-
 show() {
   wipe="\033[2K\r"
   echo -ne "$wipe"
   echo "$1"
 }
 
+keep() {
+  if [ -z "$log" ]; then
+    return
+  fi
+  echo "$1" >> "$log"
+}
+
 call() {
   if [ -z "$task" ]; then
     return
   fi
+  task=$(echo "$task" | sed "s/:RVRY/$1/g")
   echo "$task"
   bash -c "$task"
 }
 
 wake() {
   view=$(form)
-  keep "$view"
   show "$view"
-  call
+  keep "$dt0 $view"
+  call "$dt0 $view"
   exit 0
 }
 
