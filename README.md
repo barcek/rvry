@@ -26,7 +26,7 @@ rvry "task name" path/to/log
 
 Each log entry is a start datetime stamp, the duration and the tag.
 
-Several options are available (see [Options](#options) below), including the use of a Bash command on completion.
+Several options are available (see [Options](#options) below), including the use of a Bash command on completion. Any such command may include the substring `:RVRY`, which is replaced before the command is run with the available log entry elements, i.e. start datetime stamp and duration plus any tag.
 
 ## Script
 
@@ -47,7 +47,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
 - `--edge` / `-e`, to set `edge` to the value of the next argument, e.g. to 15 steps with `-e 15`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
-- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`
+- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; a command may include the substring `:RVRY`, replaced before the command is run with the start datetime stamp, duration and any tag
 - `--help` / `-h`, to show usage then exit
 - `--version` / `-v`, to show name and version number then exit
 
