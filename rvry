@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.12.0
+# rvry v1.13.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -87,7 +87,12 @@ while (( $arg_i <= ${#} )); do
 
     "--task"|"-t")
       # set $task to the value of the next argument
-      task="${@: $arg_i+1:1}"
+      # or, if a file path, the content of the file
+      if [ -f "${@: $arg_i+1:1}" ]; then
+        task=$(cat "${@: $arg_i+1:1}")
+      else
+        task="${@: $arg_i+1:1}"
+      fi
       ((arg_i++))
       ;;
 
