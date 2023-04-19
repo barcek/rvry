@@ -15,18 +15,18 @@ The `rvry` command can be run alone to show the time elapsed as its final output
 A string to label the final output can be passed as the first argument:
 
 ```shell
-rvry "task name"
+rvry "label 1"
 ```
 
 The path to a log file can be passed as the second:
 
 ```shell
-rvry "task name" path/to/log
+rvry "label 1" path/to/log
 ```
 
 Each log entry is a start datetime stamp, the duration and the tag.
 
-Several options are available (see [Options](#options) below), including the use of a Bash command on completion. Any such command may include the substring `:RVRY`, which is replaced before the command is run with the available log entry elements, i.e. start datetime stamp and duration plus any tag.
+Several options are available (see [Options](#options) below), including the use of a Bash command on completion. Any such command can receive the available log entry elements, i.e. start datetime stamp and duration plus any tag, via the output cue - `:RVRY` by default - each use of which is replaced by the elements before the command is run.
 
 ## Script
 
@@ -36,18 +36,25 @@ The hashbang at the top of the file assumes the presence of Bash.
 
 ### Defaults
 
-The core default values are defined close to the top of the source file. The character(s) printed at each step are assigned to `mark` (currently '.'), the initial step count to `path` (0), the number of seconds between each step to `beat` (1), the key pressed to end the script to `sign` ('q') and the number of steps at which to end automatically, if greater than zero only, to `edge` (0, i.e. no automatic end).
+The following core default values are defined close to the top of the source file:
+
+- `mark` - the character(s) printed at each step (currently '.')
+- `path` - the initial step count (0)
+- `beat` - the number of seconds between each step (1)
+- `edge` - the number of steps at which to end automatically, if greater than zero only (0, i.e. no automatic end)
+- `sign` - the key pressed to end the script manually ('q')
+- `word` - the output cue for commands run via the `task` option (':RVRY').
 
 ## Options
 
 The following can be passed to `rvry` before the tag and log arguments:
 
 - `--deep` / `-d`, to omit the printing of `mark`
-- `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
-- `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
-- `--edge` / `-e`, to set `edge` to the value of the next argument, e.g. to 15 steps with `-e 15`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
-- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; a command may include the substring `:RVRY`, replaced before the command is run with the start datetime stamp, duration and any tag
+- `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
+- `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
+- `--edge` / `-e`, to set `edge` to the value of the next argument, e.g. to 15 steps with `-e 15`
+- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; the command may include the substring `:RVRY`, replaced before the command is run with the start datetime stamp, duration and any tag
 - `--help` / `-h`, to show usage then exit
 - `--version` / `-v`, to show name and version number then exit
 
