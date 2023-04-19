@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.14.0
+# rvry v1.14.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -11,13 +11,14 @@
 # if either an $edge set to greater than 0 steps is reached
 # or either $sign or Ctrl-C is pressed, prints the duration
 # w/ any $tag, and if any $log appends all w/ a start stamp,
-# then if any $task runs it
+# then if any $task runs w/ any $word being the full output
 
 mark=. # characters printed
 path=0 # initial step count
 beat=1 # secs between steps
 edge=0 # if >0, steps taken
 sign=q # key pressed to end
+word=:RVRY # cue for output
 
 # set help text
 
@@ -191,7 +192,7 @@ call() {
   if [ -z "$task" ]; then
     return
   fi
-  task=$(echo "$task" | sed "s/:RVRY/$1/g")
+  task=$(echo "$task" | sed "s/$word/$1/g")
   echo "$task"
   bash -c "$task"
 }
