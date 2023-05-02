@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.14.1
+# rvry v1.15.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -23,7 +23,7 @@ word=:RVRY # cue for output
 # set help text
 
 usage_ln_1="Usage: rvry [ [ --deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>"
-usage_ln_2="                --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
+usage_ln_2="                --word <char(s)> | --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
 
 help_text="${usage_ln_1}\n${usage_ln_2}"
 
@@ -83,6 +83,12 @@ while (( $arg_i <= ${#} )); do
     "--mark"|"-m")
       # set $mark to the value of the next argument
       mark="${@: $arg_i+1:1}"
+      ((arg_i++))
+      ;;
+
+    "--word"|"-w")
+      # set $word to the value of the next argument
+      word="${@: $arg_i+1:1}"
       ((arg_i++))
       ;;
 
