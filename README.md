@@ -54,7 +54,8 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
 - `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
 - `--edge` / `-e`, to set `edge` to the value of the next argument, e.g. to 15 steps with `-e 15`
-- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; the command may include the substring `:RVRY`, replaced before the command is run with the start datetime stamp, duration and any tag
+- `--word` / `-w`, to set `word` to the value of the next argument, e.g. to '<LINE>' with `-w "<LINE>"`
+- `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; the command may include the `word` substring - `:RVRY` by default - replaced before the command is run with the start datetime stamp, duration and any tag
 - `--help` / `-h`, to show usage then exit
 - `--version` / `-v`, to show name and version number then exit
 
