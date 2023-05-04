@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.15.0
+# rvry v1.15.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -144,6 +144,7 @@ fi
 # define primary loop functions
 
 heed() {
+  # invoke wake process handler if $sign pressed
   read -t $beat -N 1 char
   if [ "$sign" == "$char" ]; then
     wake
@@ -151,6 +152,7 @@ heed() {
 }
 
 step() {
+  # print $mark if not empty and increment $path
   if [ -n "$mark" ]; then
     echo -n "${mark}"
   fi
@@ -158,6 +160,7 @@ step() {
 }
 
 pass() {
+  # call primary loop functions
   heed
   step
 }
@@ -166,7 +169,9 @@ pass() {
 
 form() {
 
-  # calculate units for $view, allowing for floating point $beat
+  # return duration based on $path and $beat, with $tag if set
+
+  # calculate duration units, allowing for floating point $beat
   secs=$(echo "$path $beat" | awk '{print $1 * $2}')
   h_rm=$(echo "$secs 86400 3600" | awk '{print $1 % $2 / $3}')
   m_rm=$(echo "$secs 3600 60" | awk '{print $1 % $2 / $3}')
@@ -182,12 +187,14 @@ form() {
 }
 
 show() {
+  # write parameter no. 1 over current line
   wipe="\033[2K\r"
   echo -ne "$wipe"
   echo "$1"
 }
 
 keep() {
+  # append parameter no. 1 to $log if set
   if [ -z "$log" ]; then
     return
   fi
@@ -195,6 +202,8 @@ keep() {
 }
 
 call() {
+  # pass $task if set as a command to Bash,
+  # each $word replaced by parameter no. 1
   if [ -z "$task" ]; then
     return
   fi
@@ -204,6 +213,7 @@ call() {
 }
 
 wake() {
+  # handle wake process then exit
   view=$(form)
   show "$view"
   keep "$dt0 $view"
