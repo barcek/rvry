@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.15.1
+# rvry v1.15.2
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -217,6 +217,7 @@ wake() {
   view=$(form)
   show "$view"
   keep "$dt0 $view"
+  tput cnorm # show cursor
   call "$dt0 $view"
   exit 0
 }
@@ -224,6 +225,8 @@ wake() {
 # initiate
 
 trap "wake" SIGINT
+
+tput civis # hide cursor
 
 if (( 0 == $edge )); then
   while true; do
