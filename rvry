@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# rvry v1.15.2
+# rvry v1.15.3
 # ©2022 barcek
 # License: MIT
 # @ github.com
 # /barcek/rvry
 
-# loops, waiting for $beat seconds for use of the $sign key,
+# Assumes the use of Bash and the presence of AWK (Gawk), cat, date, head, sed, tail and tput
+
+# Loops, waiting for $beat seconds for use of the $sign key,
 # printing one $mark and incrementing $path by 1 each cycle;
 # if either an $edge set to greater than 0 steps is reached
 # or either $sign or Ctrl-C is pressed, prints the duration
