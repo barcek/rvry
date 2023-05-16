@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.15.3
+# rvry v1.15.4
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -53,9 +53,8 @@ while (( $arg_i <= ${#} )); do
 
     "--version"|"-v")
       # show name and version number then exit
-      cd "${0%/*}" || jolt "Unable to handle option for flag '${@: $arg_i:1}'"
-      v=$(head -n 3 rvry | tail -n 1)
-      echo "${v:2:12}"
+      line=$(head -n 3 $0 | tail -n 1)
+      echo "${line: 2:12}"
       exit 0
       ;;
 
