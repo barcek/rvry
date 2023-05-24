@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# rvry v1.15.4
+# rvry v1.15.5
 # ©2022 barcek
 # License: MIT
 # @ github.com
 # /barcek/rvry
 
-# Assumes the use of Bash and the presence of AWK (Gawk), cat, date, head, sed, tail and tput
+# Assumes the presence of Bash in '/bin', plus AWK (Gawk), cat, date, head, sed, tail and tput
 
 # Loops, waiting for $beat seconds for use of the $sign key,
 # printing one $mark and incrementing $path by 1 each cycle;
@@ -22,12 +22,19 @@ edge=0 # if >0, steps taken
 sign=q # key pressed to end
 word=:RVRY # cue for output
 
-# set help text
+# define help text generator
 
-usage_ln_1="Usage: rvry [ [ --deep/-d | --beat/-b <secs> | --path/-p <steps> | --edge/-e <steps> | --mark/-m <char(s)>"
-usage_ln_2="                --word <char(s)> | --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
-
-help_text="${usage_ln_1}\n${usage_ln_2}"
+lead() {
+  lines=$(head -n 23 $1 | tail -n 15 | sed 's/$/\\n/')
+  echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> | --deep/-d"
+  echo "                --word <chars> | --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
+  echo "Initial:"
+  echo -e $lines | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
+  echo "Summary:"
+  echo -e $lines | sed 's/^ //g' | head -n 8 | tail -n 6 | sed 's/#//'  | sed 's/\$//g'
+  echo "Context:"
+  echo -e $lines | sed 's/^ //g' | head -n 1 | sed 's/#//'
+}
 
 # define error handler
 
@@ -47,7 +54,7 @@ while (( $arg_i <= ${#} )); do
 
     "--help"|"-h")
       # show help text then exit
-      echo -e "$help_text"
+      lead $0
       exit 0
       ;;
 
