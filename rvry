@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.15.5
+# rvry v1.15.6
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -26,8 +26,8 @@ word=:RVRY # cue for output
 
 lead() {
   lines=$(head -n 23 $1 | tail -n 15 | sed 's/$/\\n/')
-  echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> | --deep/-d"
-  echo "                --word <chars> | --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
+  echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> | --deep/-d |"
+  echo "                --word/-w <chars> | --task/-t <cmd: str/src> ] [tag [log]] / --help/-h / --version/-v ]"
   echo "Initial:"
   echo -e $lines | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
