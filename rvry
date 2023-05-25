@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.15.6
+# rvry v1.15.7
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -65,14 +65,9 @@ while (( $arg_i <= ${#} )); do
       exit 0
       ;;
 
-    "--deep"|"-d")
-      # omit the printing of $mark; cf. function step
-      mark=""
-      ;;
-
-    "--beat"|"-b")
-      # set $beat to the value of the next argument
-      beat=${@: $arg_i+1:1}
+    "--mark"|"-m")
+      # set $mark to the value of the next argument
+      mark="${@: $arg_i+1:1}"
       ((arg_i++))
       ;;
 
@@ -82,16 +77,21 @@ while (( $arg_i <= ${#} )); do
       ((arg_i++))
       ;;
 
+    "--beat"|"-b")
+      # set $beat to the value of the next argument
+      beat=${@: $arg_i+1:1}
+      ((arg_i++))
+      ;;
+
     "--edge"|"-e")
       # set $edge to the value of the next argument
       edge=${@: $arg_i+1:1}
       ((arg_i++))
       ;;
 
-    "--mark"|"-m")
-      # set $mark to the value of the next argument
-      mark="${@: $arg_i+1:1}"
-      ((arg_i++))
+    "--deep"|"-d")
+      # omit the printing of $mark; cf. function step
+      mark=""
       ;;
 
     "--word"|"-w")
