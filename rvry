@@ -1,20 +1,21 @@
 #!/bin/bash
 
-# rvry v1.16.1
+# rvry v1.17.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
 # /barcek/rvry
 
 # Assumes the presence of Bash in '/bin', plus AWK (Gawk),
-# cat, date, head, sed, tail and tput
+# cat, date, fold, head, sed, tail and tput
 
 # Loops, waiting for $beat seconds for use of the $sign key,
 # printing one $mark and incrementing $path by 1 each cycle;
 # if either an $edge set to greater than 0 steps is reached
 # or either $sign or Ctrl-C is pressed, prints the duration
 # w/ any $tag, and if any $log appends all w/ a start stamp,
-# then if any $task runs w/ any $word being the full output
+# then if any $task runs w/ any $word being the full output,
+# else if $glimpse is set prints the flow w/ current values
 
 mark=. # characters printed
 path=0 # initial step count
@@ -26,14 +27,14 @@ word=:RVRY # cue for output
 # define help text generator
 
 lead() {
-  lines=$(head -n 24 $1 | tail -n 16 | sed 's/$/\\n/')
+  lines=$(head -n 25 $1 | tail -n 17 | sed 's/$/\\n/')
   echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
   echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
-  echo "              [tag [log]] / --help/-h / --version/-v ]"
+  echo "              [ --glimpse/-g ] [tag [log]] / --help/-h / --version/-v ]"
   echo "Initial:"
   echo -e $lines | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
-  echo -e $lines | sed 's/^ //g' | head -n 9 | tail -n 6 | sed 's/#//'  | sed 's/\$//g'
+  echo -e $lines | sed 's/^ //g' | head -n 10 | tail -n 7 | sed 's/#//'  | sed 's/\$//g'
   echo "Context:"
   echo -e $lines | sed 's/^ //g' | head -n 2 | sed 's/#//'
 }
@@ -119,6 +120,11 @@ while (( $arg_i <= ${#} )); do
       ((arg_i++))
       ;;
 
+    "--glimpse"|"-g")
+      # interrupt to print flow w/ current values
+      glimpse=true
+      ;;
+
     --*|-*)
       # extend $slips with unavailable flag
       slips+=("'${@: $arg_i:1}'")
@@ -156,6 +162,26 @@ if [ -n "${@: $arg_i+1:1}" ]; then
   log=${@: $arg_i+1:1}
   dt0=$(date)
 fi
+
+# define interruption functions
+
+warn() {
+
+  # print flow w/ current values
+
+  if [ "1"  =  "$beat" ]; then part_beat="Once a second"; else part_beat="Every $beat seconds"; fi
+  if [  0  -lt  $edge  ]; then part_path=" and increments a count starting at $path"; part_edge=" or the count reaches $edge"; fi
+  if [ -n      "$task" ]; then part_task=", then runs '$task'"; used_word=$(echo $task | grep $word); fi
+  if [ -n "$used_word" ]; then part_word=", w/ '$word' being the full output"; fi
+  if [ -n "$tag"  ]; then part_tag=" w/ '$tag'"; fi
+  if [ -n "$log"  ]; then part_log=" and appends both w/ a start stamp to '$log'"; fi
+
+  flow="${part_beat} prints '$mark'${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration ${part_tag}${part_log}${part_task}${part_word}"
+
+  echo "$(echo $flow | fold -s -w 65)"
+  tput cnorm # show cursor
+  exit 0
+}
 
 # define primary loop functions
 
@@ -243,6 +269,8 @@ wake() {
 trap "wake" SIGINT
 
 tput civis # hide cursor
+
+if [ "true" = "$glimpse" ]; then warn; fi
 
 if (( 0 == $edge )); then
   while true; do
