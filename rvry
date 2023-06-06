@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.17.0
+# rvry v1.17.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -39,10 +39,16 @@ lead() {
   echo -e $lines | sed 's/^ //g' | head -n 2 | sed 's/#//'
 }
 
-# define error handler
+# define success and failure exit managers
+
+ease() {
+  tput cnorm # show cursor
+  exit 0
+}
 
 jolt() {
   echo "$1" >&2
+  tput cnorm # show cursor
   exit 1
 }
 
@@ -58,14 +64,14 @@ while (( $arg_i <= ${#} )); do
     "--help"|"-h")
       # show help text then exit
       lead $0
-      exit 0
+      ease
       ;;
 
     "--version"|"-v")
       # show name and version number then exit
       line=$(head -n 3 $0 | tail -n 1)
       echo "${line: 2:12}"
-      exit 0
+      ease
       ;;
 
     "--mark"|"-m")
@@ -179,8 +185,7 @@ warn() {
   flow="${part_beat} prints '$mark'${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration ${part_tag}${part_log}${part_task}${part_word}"
 
   echo "$(echo $flow | fold -s -w 65)"
-  tput cnorm # show cursor
-  exit 0
+  ease
 }
 
 # define primary loop functions
@@ -259,9 +264,8 @@ wake() {
   view=$(form)
   show "$view"
   keep "$dt0 $view"
-  tput cnorm # show cursor
   call "$dt0 $view"
-  exit 0
+  ease
 }
 
 # initiate
