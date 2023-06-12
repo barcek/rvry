@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.17.1
+# rvry v1.17.2
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -176,13 +176,14 @@ warn() {
   # print flow w/ current values
 
   if [ "1"  =  "$beat" ]; then part_beat="Once a second"; else part_beat="Every $beat seconds"; fi
+  if [ ""   =  "$mark" ]; then part_mark="an empty string"; else part_mark="'$mark'"; fi
   if [  0  -lt  $edge  ]; then part_path=" and increments a count starting at $path"; part_edge=" or the count reaches $edge"; fi
   if [ -n      "$task" ]; then part_task=", then runs '$task'"; used_word=$(echo $task | grep $word); fi
   if [ -n "$used_word" ]; then part_word=", w/ '$word' being the full output"; fi
   if [ -n "$tag"  ]; then part_tag=" w/ '$tag'"; fi
   if [ -n "$log"  ]; then part_log=" and appends both w/ a start stamp to '$log'"; fi
 
-  flow="${part_beat} prints '$mark'${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration ${part_tag}${part_log}${part_task}${part_word}"
+  flow="${part_beat} prints ${part_mark}${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration ${part_tag}${part_log}${part_task}${part_word}"
 
   echo "$(echo $flow | fold -s -w 65)"
   ease
