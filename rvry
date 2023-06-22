@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# rvry v1.18.0
+# rvry v1.18.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
 # /barcek/rvry
 
 # Assumes the presence of Bash in '/bin', plus AWK (Gawk),
-# cat, date, fold, head, sed, tail and tput
+# cat, date, fold, head, pr, sed, tail, tput and wc
 
 # Loops, waiting for $beat seconds for use of the $sign key,
 # printing one $mark and incrementing $path by 1 each cycle;
@@ -24,32 +24,49 @@ edge=0 # if >0, steps taken
 sign=q # key pressed to end
 word=:RVRY # cue for output
 
-# define help text generator
-
-lead() {
-  lines=$(head -n 25 $1 | tail -n 17 | sed 's/$/\\n/')
-  echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
-  echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
-  echo "              [ --glimpse/-g | --near/-N ] [tag [log]] / --help/-h / --version/-v ]"
-  echo "Initial:"
-  echo -e $lines | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
-  echo "Summary:"
-  echo -e $lines | sed 's/^ //g' | head -n 10 | tail -n 7 | sed 's/#//'  | sed 's/\$//g'
-  echo "Context:"
-  echo -e $lines | sed 's/^ //g' | head -n 2 | sed 's/#//'
-}
-
-# define success and failure exit managers
+# define utility functions
 
 ease() {
+  # manage exit on success
   tput cnorm # show cursor
   exit 0
 }
 
 jolt() {
+  # manage exit on failure
   echo "$1" >&2
   tput cnorm # show cursor
   exit 1
+}
+
+know() {
+  # extract and print name and version number
+  line=$(head -n 3 "$1" | tail -n 1)
+  echo "${line: 2:12}"
+}
+
+lead() {
+
+  # generate and print help text (title, usage, initial, summary, context)
+
+  notes=$(head -n 25 $1 | tail -n 17 | sed 's/$/\\n/')
+  width=$(echo -e "$notes" | head -n 1 | wc -c)
+
+  core_info="$(know $1)"
+  indt=$((((${width} - ${#core_info} - 2) / 2) - 1))
+  fill_l=$(echo "" | pr -To $indt | sed 's/ /-/g')
+  fill_r=$fill_l-
+
+  echo $fill_l "$core_info" $fill_r
+  echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
+  echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
+  echo "              [ --glimpse/-g | --near/-N ] [tag [log]] / --help/-h / --version/-v ]"
+  echo "Initial:"
+  echo -e $notes | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
+  echo "Summary:"
+  echo -e $notes | sed 's/^ //g' | head -n 10 | tail -n 7 | sed 's/#//'  | sed 's/\$//g'
+  echo "Context:"
+  echo -e $notes | sed 's/^ //g' | head -n 2 | sed 's/#//'
 }
 
 # handle any arguments provided
@@ -69,8 +86,7 @@ while (( $arg_i <= ${#} )); do
 
     "--version"|"-v")
       # show name and version number then exit
-      line=$(head -n 3 $0 | tail -n 1)
-      echo "${line: 2:12}"
+      know $0
       ease
       ;;
 
