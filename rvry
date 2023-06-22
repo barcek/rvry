@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.17.2
+# rvry v1.18.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -30,7 +30,7 @@ lead() {
   lines=$(head -n 25 $1 | tail -n 17 | sed 's/$/\\n/')
   echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
   echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
-  echo "              [ --glimpse/-g ] [tag [log]] / --help/-h / --version/-v ]"
+  echo "              [ --glimpse/-g | --near/-N ] [tag [log]] / --help/-h / --version/-v ]"
   echo "Initial:"
   echo -e $lines | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
@@ -129,6 +129,11 @@ while (( $arg_i <= ${#} )); do
     "--glimpse"|"-g")
       # interrupt to print flow w/ current values
       glimpse=true
+      ;;
+
+    "--near"|"-N")
+      # omit the escaping of $wipe; cf. function show
+      near="true"
       ;;
 
     --*|-*)
@@ -237,7 +242,11 @@ form() {
 show() {
   # write parameter no. 1 over current line
   wipe="\033[2K\r"
-  echo -ne "$wipe"
+  if [ "true" = "$near" ]; then
+    echo -n "$wipe"
+  else
+    echo -ne "$wipe"
+  fi
   echo "$1"
 }
 
