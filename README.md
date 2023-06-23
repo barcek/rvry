@@ -45,6 +45,10 @@ The following core default values are defined close to the top of the source fil
 - `sign` - the key pressed to end the script manually ('q')
 - `word` - the output cue for commands run via the `task` option (':RVRY').
 
+### Making changes
+
+Running the self-test after making changes plus extending or adding test cases to cover new behaviour is recommended. The self-test is run with the `--test` or `-T` flag (see [Options](#options) below). The test cases are set in the `push` function close to the top of the source file.
+
 ## Options
 
 The following can be passed to `rvry` before the tag and log arguments:
@@ -58,9 +62,11 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--word` / `-w`, to set `word` to the value of the next argument, e.g. to '<LINE>' with `-w "<LINE>"`
 - `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; the command may include the `word` substring - `:RVRY` by default - replaced before the command is run with the start datetime stamp, duration and any tag
 - `--glimpse` / `-g`, to show the flow with current values then exit
-- `--help` / `-h`, to show usage then exit
+- `--near` / `-N`, to retain all printed characters and show those ordinarily hidden
 - `--version` / `-v`, to show name and version number then exit
+- `--help` / `-h`, to show usage then exit
+- `--test` / `-T`, to perform the self-test then exit
 
 ## Streams
 
-If the output of `rvry` is piped to another process, the character(s) marking each step are not printed. The final output only is passed - and logged to file if applicable - as usual once the key to end the script has been pressed. Use of `Ctrl-C` to end the script will interrupt the entire pipeline.
+If the output of `rvry` is piped to another process, only the final output is passed, without the character(s) marking each step, unless the `--near` or `-N` flag is used. Use of `Ctrl-C` to end the script will interrupt the entire pipeline.
