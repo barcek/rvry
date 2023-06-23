@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# rvry v1.18.1
+# rvry v1.19.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
 # /barcek/rvry
 
-# Assumes the presence of Bash in '/bin', plus AWK (Gawk),
-# cat, date, fold, head, pr, sed, tail, tput and wc
+# Assumes the presence of Bash in '/bin', plus AWK (Gawk), cat,
+# date, fold, grep, head, pr, sed, tail, tput, tr and wc
 
 # Loops, waiting for $beat seconds for use of the $sign key,
 # printing one $mark and incrementing $path by 1 each cycle;
@@ -24,7 +24,7 @@ edge=0 # if >0, steps taken
 sign=q # key pressed to end
 word=:RVRY # cue for output
 
-# define utility functions
+# define utility functions, general
 
 ease() {
   # manage exit on success
@@ -60,13 +60,60 @@ lead() {
   echo $fill_l "$core_info" $fill_r
   echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
   echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
-  echo "              [ --glimpse/-g | --near/-N ] [tag [log]] / --help/-h / --version/-v ]"
+  echo "              [ --glimpse/-g | --near/-N ] [tag [log]] / --version/-v / --help/-h / --test/-T ]"
   echo "Initial:"
   echo -e $notes | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
   echo -e $notes | sed 's/^ //g' | head -n 10 | tail -n 7 | sed 's/#//'  | sed 's/\$//g'
   echo "Context:"
   echo -e $notes | sed 's/^ //g' | head -n 2 | sed 's/#//'
+}
+
+push() {
+
+  # perform self-test
+
+  # set arguments
+  m=">"; p="4027098"; b="0.01"; e="4027100"; s=" "; w="{}"; tk="echo HEAD {} TAIL"; tg="test"; l="/dev/null"
+
+  # get command outputs
+  output_m_g_c="$($0 -g -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_m_g_w="$($0 --glimpse --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_d_g_c="$($0 -g -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_d_g_w="$($0 --glimpse --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_m_N_c="$($0 -N -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_m_N_w="$($0 --near --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_d_N_c="$($0 -N -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_d_N_w="$($0 --near --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+
+  # define utility functions, self-test
+  join_on_space() {
+    awk '{ s = s $0 } END { print s }'
+  }
+  is_glimpsed() {
+    while read line; do echo "$line" | grep "prints $1" | grep "starting at $p" | grep "$b seconds" | grep "reaches $e" | grep "'$s' or Ctrl-C" | grep "w/ '$w'" | grep "runs '$tk'" | grep "duration w/ '$tg'" | grep "to '$l'" | wc -l; done
+  }
+  is_near() {
+    while read line; do echo "$line" | grep "$1\033\[2K\r11:11:11 test echo HEAD " | grep " 11:11:11 test TAIL" | wc -l; done
+  }
+  show_newlines() {
+    while read line; do echo "$line" | sed 's/$/\\n/g' | tr -d "\n"; done
+  }
+  run_test_case() {
+    [ "$2" = "$3" ] && echo "PASS: $1" || echo "FAIL: $1 | expected '$2' to equal '$3'"
+  }
+
+  run_test_case "mark/g/chars" "$(echo $output_m_g_c | join_on_space | is_glimpsed "'$m'")" "1"
+  run_test_case "mark/g/words" "$(echo $output_m_g_w | join_on_space | is_glimpsed "'$m'")" "1"
+  run_test_case "deep/g/chars" "$(echo $output_d_g_c | join_on_space | is_glimpsed "an empty string")" "1"
+  run_test_case "deep/g/words" "$(echo $output_d_g_w | join_on_space | is_glimpsed "an empty string")" "1"
+  run_test_case "mark/N/chars" "$(echo $output_m_N_c | join_on_space | is_near $m$m)" "1"
+  run_test_case "mark/N/words" "$(echo $output_m_N_c | join_on_space | is_near $m$m)" "1"
+  run_test_case "deep/N/chars" "$(echo $output_d_N_c | join_on_space | is_near)" "1"
+  run_test_case "deep/N/words" "$(echo $output_d_N_w | join_on_space | is_near)" "1"
+  run_test_case "str/jolt/1" "$($0 -i 2>&1 | show_newlines)"       "No option for flag '-i'\n"
+  run_test_case "str/jolt/2" "$($0 -i -j 2>&1 | show_newlines)"    "No option for flag '-i' or '-j'\n"
+  run_test_case "str/jolt/3" "$($0 -i -j -k 2>&1 | show_newlines)" "No option for flag '-i', '-j' or '-k'\n"
 }
 
 # handle any arguments provided
@@ -87,6 +134,12 @@ while (( $arg_i <= ${#} )); do
     "--version"|"-v")
       # show name and version number then exit
       know $0
+      ease
+      ;;
+
+    "--test"|"-T")
+      # perform self-test then exit
+      push
       ease
       ;;
 
