@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.19.0
+# rvry v1.19.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -49,13 +49,20 @@ lead() {
 
   # generate and print help text (title, usage, initial, summary, context)
 
+  # define utility functions, help
+  get_fill() {
+    echo "" | pr -To $1 | sed 's/ /-/g'
+  }
+
   notes=$(head -n 25 $1 | tail -n 17 | sed 's/$/\\n/')
   width=$(echo -e "$notes" | head -n 1 | wc -c)
 
   core_info="$(know $1)"
-  indt=$((((${width} - ${#core_info} - 2) / 2) - 1))
-  fill_l=$(echo "" | pr -To $indt | sed 's/ /-/g')
-  fill_r=$fill_l-
+  diff=$((${width} - ${#core_info} - 2))
+  indt=$(($diff / 2 - 1))
+  rmdr=$(($diff % 2))
+  fill_l=$(get_fill $indt)
+  fill_r=$(get_fill $(($indt + $rmdr)))
 
   echo $fill_l "$core_info" $fill_r
   echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
