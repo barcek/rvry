@@ -2,7 +2,7 @@
 
 Mark time passing in the terminal.
 
-By default prints one dot per second, and when stopped with `q` or `Ctrl-C` shows the time elapsed. Can be passed a tag to label the duration and a path to log the whole with date and time to a file, plus a Bash command to be run on completion.
+Highly configurable by flag, with a flow description option and self-test. Can be passed a tag to label the duration and a path to log the whole with date and time to a file, plus a Bash command to be run on completion.
 
 ## Why?
 
@@ -10,7 +10,7 @@ To track the durations of regular activities, see a measure of time taken on a t
 
 ## How?
 
-The `rvry` command can be run alone to show the time elapsed as its final output.
+The `rvry` command can be run alone to show the time elapsed as its final output. By default it prints one dot per second, and when stopped with `q` or `Ctrl-C` shows the time elapsed.
 
 A string to label the final output can be passed as the first argument:
 
@@ -64,7 +64,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--glimpse` / `-g`, to show the flow with current values then exit
 - `--near` / `-N`, to retain all printed characters and show those ordinarily hidden
 - `--version` / `-v`, to show name and version number then exit
-- `--help` / `-h`, to show usage then exit
+- `--help` / `-h`, to show help text then exit
 - `--test` / `-T`, to perform the self-test then exit
 
 ## Streams
