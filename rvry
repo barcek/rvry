@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.19.1
+# rvry v1.19.2
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -67,11 +67,11 @@ lead() {
   echo $fill_l "$core_info" $fill_r
   echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
   echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
-  echo "              [ --glimpse/-g | --near/-N ] [tag [log]] / --version/-v / --help/-h / --test/-T ]"
+  echo "              [ --glimpse/-g | --near/-N ] [TAG [LOG]] / --version/-v / --help/-h / --test/-T ]"
   echo "Initial:"
   echo -e $notes | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
-  echo -e $notes | sed 's/^ //g' | head -n 10 | tail -n 7 | sed 's/#//'  | sed 's/\$//g'
+  echo -e $notes | sed 's/^ //g' | head -n 10 | tail -n 7 | sed 's/#//' | sed 's/\$//g' | sed 's/tag/TAG/' | sed 's/log/LOG/'
   echo "Context:"
   echo -e $notes | sed 's/^ //g' | head -n 2 | sed 's/#//'
 }
