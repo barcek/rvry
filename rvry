@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.19.2
+# rvry v1.19.3
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -121,6 +121,9 @@ push() {
   run_test_case "str/jolt/1" "$($0 -i 2>&1 | show_newlines)"       "No option for flag '-i'\n"
   run_test_case "str/jolt/2" "$($0 -i -j 2>&1 | show_newlines)"    "No option for flag '-i' or '-j'\n"
   run_test_case "str/jolt/3" "$($0 -i -j -k 2>&1 | show_newlines)" "No option for flag '-i', '-j' or '-k'\n"
+  run_test_case "str/v/full" "$($0 -v | grep -E "rvry v([0-9]+\.){2}[0-9]+" | wc -l)" "1"
+  run_test_case "str/h/form" "$($0 -h | grep -E "(- rvry v|Usage:|Initial:|Summary:|Context:)" | wc -l)" "5"
+  run_test_case "str/h/ln_c" "$($0 -h | wc -l)" "22"
 }
 
 # handle any arguments provided
