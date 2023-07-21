@@ -70,3 +70,15 @@ The following can be passed to `rvry` before the tag and log arguments:
 ## Streams
 
 If the output of `rvry` is piped to another process, only the final output is passed, without the character(s) marking each step, unless the `--near` or `-N` flag is used. Use of `Ctrl-C` to end the script will interrupt the entire pipeline.
+
+## Development plan
+
+The following are the expected next steps in the development of the code base. The general medium-term aim is a more portable, robust and visual implementation. Pull requests are welcome for these and other potential improvements.
+
+- provide sample uses
+- add automatic dependency checking with notification
+- extend argument handling for short flag clustering
+- allow for:
+  - greater variation in visual output
+  - alternative timestamp formats
+- revise for full POSIX compatibility
