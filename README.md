@@ -54,6 +54,7 @@ Running the self-test after making changes plus extending or adding test cases t
 The following can be passed to `rvry` before the tag and log arguments:
 
 - `--deep` / `-d`, to omit the printing of `mark`
+- `--full` / `-f`, to print escaped characters in `mark`
 - `--mark` / `-m`, to set `mark` to the value of the next argument, e.g. to '+' with `-m +`
 - `--path` / `-p`, to set `path` to the value of the next argument, e.g. to 10 steps with `-p 10`
 - `--beat` / `-b`, to set `beat` to the value of the next argument, e.g. to 0.5 seconds with `-b 0.5`
@@ -62,7 +63,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--word` / `-w`, to set `word` to the value of the next argument, e.g. to '<LINE>' with `-w "<LINE>"`
 - `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; the command may include the `word` substring - `:RVRY` by default - replaced before the command is run with the start datetime stamp, duration and any tag
 - `--glimpse` / `-g`, to show the flow with current values then exit
-- `--near` / `-N`, to retain all printed characters and show those ordinarily hidden
+- `--near` / `-N`, to retain all printed characters and show those ordinarily hidden, overriding `--full` / `-f`
 - `--version` / `-v`, to show name and version number then exit
 - `--help` / `-h`, to show help text then exit
 - `--test` / `-T`, to perform the self-test then exit
@@ -76,7 +77,6 @@ If the output of `rvry` is piped to another process, only the final output is pa
 The following are the expected next steps in the development of the code base. The general medium-term aim is a more portable, robust and visual implementation. Pull requests are welcome for these and other potential improvements.
 
 - provide sample uses
-- add automatic dependency checking with notification
 - extend argument handling for short flag clustering
 - allow for:
   - greater variation in visual output
