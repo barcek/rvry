@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.20.0
+# rvry v1.21.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -11,7 +11,8 @@
 # tput, tr and wc
 
 # Loops, waiting for $beat seconds for use of the $sign key,
-# printing one $mark and incrementing $path by 1 each cycle;
+# printing one $mark and incrementing $path by 1 each cycle,
+# w/ print skipped if --deep and escaping active if --full;
 # if either an $edge set to greater than 0 steps is reached
 # or either $sign or Ctrl-C is pressed, prints the duration
 # w/ any $tag, and if any $log appends all w/ a start stamp,
@@ -88,7 +89,7 @@ lead() {
     echo "" | pr -To $1 | sed 's/ /-/g'
   }
 
-  notes=$(head -n 26 $1 | tail -n 18 | sed 's/$/\\n/')
+  notes=$(head -n 27 $1 | tail -n 19 | sed 's/$/\\n/')
   width=$(echo -e "$notes" | head -n 1 | wc -c)
 
   core_info="$(know $1)"
@@ -99,13 +100,22 @@ lead() {
   fill_r=$(get_fill $(($indt + $rmdr)))
 
   echo $fill_l "$core_info" $fill_r
-  echo "Usage: rvry [ [ --mark/-m <chars> | --path/-p <steps> | --beat/-b <secs> | --edge/-e <steps> |"
-  echo "                --deep/-d | --sign/-s <key> | --word/-w <chars> | --task/-t <cmd: str/src> ]"
-  echo "              [ --glimpse/-g | --near/-N ] [TAG [LOG]] / --version/-v / --help/-h / --test/-T ]"
+  echo "Usage: rvry ["
+  echo "  ["
+  echo "    --mark/-m <chars> | --path/-p <steps> |"
+  echo "    --beat/-b <secs>  | --edge/-e <steps> |"
+  echo "    --deep/-d | --full/-f |"
+  echo "    --sign/-s <key> |"
+  echo "    --word/-w <chars> | --task/-t <cmd: str/src>"
+  echo "  ]"
+  echo "  [ --glimpse/-g | --near/-N ]"
+  echo "  [ TAG [ LOG ] ]"
+  echo "    / --version/-v / --help/-h / --test/-T"
+  echo "]"
   echo "Initial:"
   echo -e $notes | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
-  echo -e $notes | sed 's/^ //g' | head -n 11 | tail -n 7 | sed 's/#//' | sed 's/\$//g' | sed 's/tag/TAG/' | sed 's/log/LOG/'
+  echo -e $notes | sed 's/^ //g' | head -n 12 | tail -n 8 | sed 's/#//' | sed 's/\$//g' | sed 's/tag/TAG/' | sed 's/log/LOG/'
   echo "Context:"
   echo -e $notes | sed 's/^ //g' | head -n 3 | sed 's/#//'
 }
@@ -115,27 +125,31 @@ push() {
   # perform self-test
 
   # set arguments
-  m=">"; p="4027098"; b="0.01"; e="4027100"; s=" "; w="{}"; tk="echo HEAD {} TAIL"; tg="test"; l="/dev/null"
+  m=">"; m_esc=".\n"; p="4027098"; b="0.01"; e="4027100"; s=" "; w="{}"; tk="echo HEAD {} TAIL"; tg="test"; l="/dev/null"
 
   # get command outputs
   output_m_g_c="$($0 -g -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_m_g_w="$($0 --glimpse --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_d_g_c="$($0 -g -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_d_g_w="$($0 --glimpse --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_f_g_c="$($0 -g -f -m "$m_esc" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_f_g_w="$($0 --glimpse --full --mark "$m_esc" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_m_N_c="$($0 -N -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_m_N_w="$($0 --near --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_d_N_c="$($0 -N -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_d_N_w="$($0 --near --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_f_N_c="$($0 -N -f -m "$m_esc" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_f_N_w="$($0 --near --full -m "$m_esc" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
 
   # define utility functions, self-test
   join_on_space() {
     awk '{ s = s $0 } END { print s }'
   }
   is_glimpsed() {
-    while read line; do echo "$line" | grep "prints $1" | grep "starting at $p" | grep "$b seconds" | grep "reaches $e" | grep "'$s' or Ctrl-C" | grep "w/ '$w'" | grep "runs '$tk'" | grep "duration w/ '$tg'" | grep "to '$l'" | wc -l; done
+    while read line; do echo "$line" | grep "prints $1" | grep "starting at $p" | grep "$b seconds" | grep "reaches $e" | grep "'$s' or Ctrl-C" | grep "w/ '$w'" | grep "runs '$tk'" | grep "duration w/ '$tg'" | grep "to '$l'" | grep "$2" | wc -l; done
   }
   is_near() {
-    while read line; do echo "$line" | grep "$1\033\[2K\r11:11:11 test echo HEAD " | grep " 11:11:11 test TAIL" | wc -l; done
+    while read line; do echo "$line" | grep "$1\033\[2K\r11:11:11 test echo HEAD " | grep " 11:11:11 test TAIL" | grep "$2" | wc -l; done
   }
   show_newlines() {
     while read line; do echo "$line" | sed 's/$/\\n/g' | tr -d "\n"; done
@@ -144,14 +158,18 @@ push() {
     [ "$2" = "$3" ] && echo "PASS: $1" || echo "FAIL: $1 | expected '$2' to equal '$3'"
   }
 
-  run_test_case "mark/g/chars" "$(echo $output_m_g_c | join_on_space | is_glimpsed "'$m'")" "1"
-  run_test_case "mark/g/words" "$(echo $output_m_g_w | join_on_space | is_glimpsed "'$m'")" "1"
-  run_test_case "deep/g/chars" "$(echo $output_d_g_c | join_on_space | is_glimpsed "an empty string")" "1"
-  run_test_case "deep/g/words" "$(echo $output_d_g_w | join_on_space | is_glimpsed "an empty string")" "1"
+  run_test_case "mark/g/chars" "$(echo $output_m_g_c | join_on_space | is_glimpsed "'$m'" "")" "1"
+  run_test_case "mark/g/words" "$(echo $output_m_g_w | join_on_space | is_glimpsed "'$m'" "")" "1"
+  run_test_case "deep/g/chars" "$(echo $output_d_g_c | join_on_space | is_glimpsed "an empty string" "")" "1"
+  run_test_case "deep/g/words" "$(echo $output_d_g_w | join_on_space | is_glimpsed "an empty string" "")" "1"
+  run_test_case "full/g/chars" "$(echo $output_f_g_c | join_on_space | is_glimpsed "'$m_esc'" "with escaping active")" "1"
+  run_test_case "full/g/words" "$(echo $output_f_g_w | join_on_space | is_glimpsed "'$m_esc'" "with escaping active")" "1"
   run_test_case "mark/N/chars" "$(echo $output_m_N_c | join_on_space | is_near $m$m)" "1"
   run_test_case "mark/N/words" "$(echo $output_m_N_c | join_on_space | is_near $m$m)" "1"
-  run_test_case "deep/N/chars" "$(echo $output_d_N_c | join_on_space | is_near)" "1"
-  run_test_case "deep/N/words" "$(echo $output_d_N_w | join_on_space | is_near)" "1"
+  run_test_case "deep/N/chars" "$(echo $output_d_N_c | join_on_space | is_near "")" "1"
+  run_test_case "deep/N/words" "$(echo $output_d_N_w | join_on_space | is_near "")" "1"
+  run_test_case "full/N/chars" "$(echo $output_f_N_c | join_on_space | is_near "..\n")" "1"
+  run_test_case "full/N/words" "$(echo $output_f_N_w | join_on_space | is_near "..\n")" "1"
   run_test_case "str/jolt/1" "$($0 -i 2>&1 | show_newlines)"       "No option for flag '-i'\n"
   run_test_case "str/jolt/2" "$($0 -i -j 2>&1 | show_newlines)"    "No option for flag '-i' or '-j'\n"
   run_test_case "str/jolt/3" "$($0 -i -j -k 2>&1 | show_newlines)" "No option for flag '-i', '-j' or '-k'\n"
@@ -161,7 +179,7 @@ push() {
   run_test_case "str/peer/3" "$(peer echo command_1 command_2 command_3)" "Absent commands command_1, command_2 and command_3"
   run_test_case "str/v/full" "$($0 -v | grep -E "rvry v([0-9]+\.){2}[0-9]+" | wc -l)" "1"
   run_test_case "str/h/form" "$($0 -h | grep -E "(- rvry v|Usage:|Initial:|Summary:|Context:)" | wc -l)" "5"
-  run_test_case "str/h/ln_c" "$($0 -h | wc -l)" "23"
+  run_test_case "str/h/ln_c" "$($0 -h | wc -l)" "33"
 }
 
 # handle any arguments provided
@@ -226,6 +244,11 @@ while (( $arg_i <= ${#} )); do
       mark=""
       ;;
 
+    "--full"|"-f")
+      # allow for escapes in $mark; cf. function step
+      full=true
+      ;;
+
     "--word"|"-w")
       # set $word to the value of the next argument
       word="${@: $arg_i+1:1}"
@@ -250,7 +273,7 @@ while (( $arg_i <= ${#} )); do
 
     "--near"|"-N")
       # omit the escaping of $wipe; cf. function show
-      near="true"
+      near=true
       ;;
 
     --*|-*)
@@ -299,13 +322,14 @@ warn() {
 
   if [ "1"  =  "$beat" ]; then part_beat="Once a second"; else part_beat="Every $beat seconds"; fi
   if [ ""   =  "$mark" ]; then part_mark="an empty string"; else part_mark="'$mark'"; fi
+  if [ -n      "$full" ]; then part_full=" with escaping active"; fi
   if [  0  -lt  $edge  ]; then part_path=" and increments a count starting at $path"; part_edge=" or the count reaches $edge"; fi
   if [ -n      "$task" ]; then part_task=", then runs '$task'"; used_word=$(echo $task | grep $word); fi
   if [ -n "$used_word" ]; then part_word=", w/ '$word' being the full output"; fi
   if [ -n "$tag"  ]; then part_tag=" w/ '$tag'"; fi
   if [ -n "$log"  ]; then part_log=" and appends both w/ a start stamp to '$log'"; fi
 
-  flow="${part_beat} prints ${part_mark}${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration ${part_tag}${part_log}${part_task}${part_word}"
+  flow="${part_beat} prints ${part_mark}${part_full}${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration ${part_tag}${part_log}${part_task}${part_word}"
 
   echo "$(echo $flow | fold -s -w 65)"
   ease
@@ -322,9 +346,14 @@ heed() {
 }
 
 step() {
-  # print $mark if not empty and increment $path
+  # print $mark if not empty and increment $path,
+  # handling also visibility per $full and $near
   if [ -n "$mark" ]; then
-    echo -n "${mark}"
+    if [ -z "$full" ] || [ -n "$near" ]; then
+      echo -n "${mark}"
+    else
+      echo -ne "${mark}"
+    fi
   fi
   ((path++))
 }
@@ -359,7 +388,7 @@ form() {
 show() {
   # write parameter no. 1 over current line
   wipe="\033[2K\r"
-  if [ "true" = "$near" ]; then
+  if [ -n "$near" ]; then
     echo -n "$wipe"
   else
     echo -ne "$wipe"
@@ -401,7 +430,7 @@ trap "wake" SIGINT
 
 tput civis # hide cursor
 
-if [ "true" = "$glimpse" ]; then warn; fi
+if [ -n "$glimpse" ]; then warn; fi
 
 if (( 0 == $edge )); then
   while true; do
