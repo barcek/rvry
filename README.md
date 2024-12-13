@@ -2,11 +2,13 @@
 
 Mark time passing in the terminal.
 
-Highly configurable by flag, with a flow description option and self-test. Can be passed a tag to label the duration and a path to log the whole with date and time to a file, plus a Bash command to be run on completion.
+Highly configurable by flag, with a flow description option and self-test. Can be passed a tag to label the duration and a path to log the whole with date and time to a file, plus a Bash command to be run at each step or on completion.
 
 ## Why?
 
 To track the durations of regular activities, see a measure of time taken on a task so far, or delay one, or zone out with a subtle visual beat.
+
+Useful also for jobs needing immediate setup, sub-minute spacing or display.
 
 ## How?
 
@@ -26,7 +28,12 @@ rvry "label 1" path/to/log
 
 Each log entry is a start datetime stamp, the duration and the tag.
 
-Several options are available (see [Options](#options) below), including the use of a Bash command on completion. Any such command can receive the available log entry elements, i.e. start datetime stamp and duration plus any tag, via the output cue - `:RVRY` by default - each use of which is replaced by the elements before the command is run.
+Several options are available (see [Options](#options) below). These include the use of a Bash command run either on completion or at each step:
+
+- on completion with the base option (i.e. `--task` / `-t`)
+- at each step with one additional option applied (i.e. also `--lift` / `-l`)
+
+Any such command can receive the available log entry elements, i.e. start datetime stamp and duration plus any tag, via the output cue - `:RVRY` by default - each use of which is replaced with the log entry elements before the command is run.
 
 ## Source
 
@@ -62,6 +69,7 @@ The following can be passed to `rvry` before the tag and log arguments:
 - `--sign` / `-s`, to set `sign` to the value of the next argument, e.g. to space with `-s " "`
 - `--word` / `-w`, to set `word` to the value of the next argument, e.g. to '<LINE>' with `-w "<LINE>"`
 - `--task` / `-t`, to show and run on completion the Bash command being the value of the next argument, e.g. `echo done` with `-t "echo done"`, or, if a file path, e.g. `-t path/to/script.sh`, the content of the file; the command may include the `word` substring - `:RVRY` by default - replaced before the command is run with the start datetime stamp, duration and any tag
+- `--lift` / `-l`, to perform the action for `--task` / `-t` at each step, in place of printing `mark`, rather than on completion
 - `--glimpse` / `-g`, to show the flow with current values then exit
 - `--near` / `-N`, to retain all printed characters and show those ordinarily hidden, overriding `--full` / `-f`
 - `--version` / `-v`, to show name and version number then exit
