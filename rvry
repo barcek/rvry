@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.22.0
+# rvry v1.22.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -131,8 +131,8 @@ push() {
   # get command outputs
   output_m_g_c="$($0 -g -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_m_g_w="$($0 --glimpse --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
-  output_d_g_c="$($0 -g -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
-  output_d_g_w="$($0 --glimpse --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_d_g_c="$($0 -g -d -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_d_g_w="$($0 --glimpse --deep --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_f_g_c="$($0 -g -f -m "$m_esc" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_f_g_w="$($0 --glimpse --full --mark "$m_esc" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_l_g_c="$($0 -g -l -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
@@ -140,15 +140,15 @@ push() {
 
   output_m_N_c="$($0 -N -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_m_N_w="$($0 --near --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
-  output_d_N_c="$($0 -N -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
-  output_d_N_w="$($0 --near --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_d_N_c="$($0 -N -d -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_d_N_w="$($0 --near --deep --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_f_N_c="$($0 -N -f -m "$m_esc" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_f_N_w="$($0 --near --full --mark "$m_esc" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_l_N_c="$($0 -N -l -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_l_N_w="$($0 --near --lift --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
 
-  output_ld_N_c="$($0 -N -l -d -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
-  output_ld_N_w="$($0 --near --lift --deep --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_ld_N_c="$($0 -N -l -d -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_ld_N_w="$($0 --near --lift --deep --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
 
   # define utility functions, self-test
   join_on_space() {
@@ -172,8 +172,8 @@ push() {
 
   run_test_case ":mark/g/chars"   "$(echo $output_m_g_c | join_on_space | is_glimpsed "prints '$m'" "")" "1"
   run_test_case ":mark/g/words"   "$(echo $output_m_g_w | join_on_space | is_glimpsed "prints '$m'" "")" "1"
-  run_test_case "/deep/g/chars"   "$(echo $output_d_g_c | join_on_space | is_glimpsed "prints an empty string" "")" "1"
-  run_test_case "/deep/g/words"   "$(echo $output_d_g_w | join_on_space | is_glimpsed "prints an empty string" "")" "1"
+  run_test_case "+deep/g/chars"   "$(echo $output_d_g_c | join_on_space | is_glimpsed "prints nothing" "")" "1"
+  run_test_case "+deep/g/words"   "$(echo $output_d_g_w | join_on_space | is_glimpsed "prints nothing" "")" "1"
   run_test_case "+full/g/chars"   "$(echo $output_f_g_c | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
   run_test_case "+full/g/words"   "$(echo $output_f_g_w | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
   echo "---------------------"
@@ -184,10 +184,10 @@ push() {
   echo "---------------------"
   run_test_case ":mark/N/chars"   "$(echo $output_m_N_c | join_on_space | is_near "$m$m" "")" "1"
   run_test_case ":mark/N/words"   "$(echo $output_m_N_c | join_on_space | is_near "$m$m" "")" "1"
-  run_test_case "/deep/N/chars/+" "$(echo $output_d_N_c | join_on_space | is_near "" "")" "1"
-  run_test_case "/deep/N/chars/-" "$(echo $output_d_N_c | join_on_space | is_near "$m$m" "")" "0"
-  run_test_case "/deep/N/words/+" "$(echo $output_d_N_w | join_on_space | is_near "" "")" "1"
-  run_test_case "/deep/N/words/-" "$(echo $output_d_N_w | join_on_space | is_near "$m$m" "")" "0"
+  run_test_case "+deep/N/chars/+" "$(echo $output_d_N_c | join_on_space | is_near "" "")" "1"
+  run_test_case "+deep/N/chars/-" "$(echo $output_d_N_c | join_on_space | is_near "$m$m" "")" "0"
+  run_test_case "+deep/N/words/+" "$(echo $output_d_N_w | join_on_space | is_near "" "")" "1"
+  run_test_case "+deep/N/words/-" "$(echo $output_d_N_w | join_on_space | is_near "$m$m" "")" "0"
   run_test_case "+full/N/chars"   "$(echo $output_f_N_c | join_on_space | is_near "$m_esc$m_esc" "")" "1"
   run_test_case "+full/N/words"   "$(echo $output_f_N_w | join_on_space | is_near "$m_esc$m_esc" "")" "1"
   echo "---------------------"
@@ -269,7 +269,7 @@ while (( $arg_i <= ${#} )); do
 
     "--deep"|"-d")
       # omit the printing of $mark; cf. function step
-      mark=""
+      deep=true
       ;;
 
     "--full"|"-f")
@@ -354,7 +354,7 @@ warn() {
   # print flow w/ current values
 
   if [ "1"  =  "$beat" ]; then part_beat="Once a second"; else part_beat="Every $beat seconds"; fi
-  if [ ""   =  "$mark" ]; then part_mark="an empty string"; else part_mark="'$mark'"; fi
+  if [ -n      "$deep" ]; then part_mark="nothing"; else part_mark="'$mark'"; fi
   if [ -n      "$full" ]; then part_full=" with escaping active"; fi
   if [  0  -lt  $edge  ]; then part_path=" and increments a count starting at $path"; part_edge=" or the count reaches $edge"; fi
   if [ -n      "$task" ]; then used_word=$(echo $task | grep $word); fi
@@ -389,7 +389,7 @@ step() {
     view=$(form)
     from="step"
     call "$dt0 $view" "$from"
-  elif [ -n "$mark" ]; then
+  elif [ -z "$deep" ]; then
     if [ -z "$full" ] || [ -n "$near" ]; then
       echo -n "${mark}"
     else
@@ -449,7 +449,7 @@ call() {
   # each $word replaced by parameter no. 1,
   # handling also visibility per --deep option
   deed=$(echo "$task" | sed "s/$word/$1/g")
-  if [ ! "$mark" = "" ] || [ "$2" = "wake" ]; then
+  if [ -z "$deep" ] || [ "$2" = "wake" ]; then
     echo "$deed"
   fi
   bash -c "$deed"
