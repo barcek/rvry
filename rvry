@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.23.0
+# rvry v1.24.0
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -15,10 +15,11 @@
 # w/ print skipped if --deep and escaping active if --full;
 # if either an $edge set to greater than 0 steps is reached
 # or either $sign or Ctrl-C is pressed, prints the duration
-# w/ any $tag, and if any $log appends all w/ a start stamp,
-# then if any $task runs w/ any $word being the full output,
-# else if $glimpse is set prints the flow w/ current values;
-# where $lift is set, runs any $task instead for each print
+# w/ any $tag, and if any $log appends all w/ a start stamp;
+# then, if any $task, runs, w/ any $word as the full output,
+# passing to bash -c by default or exec unquoted if --flux;
+# else if --glimpse, prints the flow w/ the current values;
+# where --lift, runs any final $task instead for each print
 
 mark=. # characters printed
 path=0 # initial step count
@@ -95,7 +96,7 @@ lead() {
     echo "" | pr -To $1 | sed 's/ /-/g'
   }
 
-  notes=$(head -n 28 $1 | tail -n 20 | sed 's/$/\\n/')
+  notes=$(head -n 29 $1 | tail -n 21 | sed 's/$/\\n/')
   width=$(echo -e "$notes" | head -n 1 | wc -c)
 
   core_info="$(know $1)"
@@ -112,7 +113,8 @@ lead() {
   echo "    --beat/-b <secs>  | --edge/-e <steps> |"
   echo "    --deep/-d | --full/-f |"
   echo "    --sign/-s <key> |"
-  echo "    --word/-w <chars> | --lift/-l | --task/-t <cmd: str/src>"
+  echo "    --word/-w <chars> | --lift/-l | --flux/-x |"
+  echo "    --task/-t <cmd: str/src>"
   echo "  ]"
   echo "  [ --glimpse/-g | --near/-N ]"
   echo "  [ TAG [ LOG ] ]"
@@ -121,7 +123,7 @@ lead() {
   echo "Initial:"
   echo -e $notes | sed 's/^ //g' | tail -n 7 | head -n 6 | sed 's/^/ /' | sed 's/=/ = /' | sed 's/# /(/' | sed 's/$/)/'
   echo "Summary:"
-  echo -e $notes | sed 's/^ //g' | head -n 13 | tail -n 9 | sed 's/#//' | sed 's/\$//g' | sed 's/tag/TAG/' | sed 's/log/LOG/'
+  echo -e $notes | sed 's/^ //g' | head -n 14 | tail -n 10 | sed 's/#//' | sed 's/\$//g' | sed 's/tag/TAG/' | sed 's/log/LOG/'
   echo "Context:"
   echo -e $notes | sed 's/^ //g' | head -n 3 | sed 's/#//'
 }
@@ -145,6 +147,8 @@ push() {
   output_f_g_w="$($0 --glimpse --full --mark "$m_esc" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
   output_l_g_c="$($0 -g -l -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_l_g_w="$($0 --glimpse --lift --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
+  output_x_g_c="$($0 -g -x -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
+  output_x_g_w="$($0 --glimpse --flux --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
 
   output_m_N_c="$($0 -N -m "$m" -p "$p" -b "$b" -e "$e" -s "$s" -w "$w" -t "$tk" "$tg" "$l")"
   output_m_N_w="$($0 --near --mark "$m" --path "$p" --beat "$b" --edge "$e" --sign "$s" --word "$w" --task "$tk" "$tg" "$l")"
@@ -183,17 +187,20 @@ push() {
     fi
   }
 
-  run_test_case ":mark/g/chars"   "$(echo $output_m_g_c | join_on_space | is_glimpsed "prints '$m'" "")" "1"
-  run_test_case ":mark/g/words"   "$(echo $output_m_g_w | join_on_space | is_glimpsed "prints '$m'" "")" "1"
+  run_test_case ":mark/g/chars"   "$(echo $output_m_g_c | join_on_space | is_glimpsed "prints '$m'" "passing '$tk' to bash -c")" "1"
+  run_test_case ":mark/g/words"   "$(echo $output_m_g_w | join_on_space | is_glimpsed "prints '$m'" "passing '$tk' to bash -c")" "1"
   run_test_case "+deep/g/chars"   "$(echo $output_d_g_c | join_on_space | is_glimpsed "prints nothing" "")" "1"
   run_test_case "+deep/g/words"   "$(echo $output_d_g_w | join_on_space | is_glimpsed "prints nothing" "")" "1"
   run_test_case "+full/g/chars"   "$(echo $output_f_g_c | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
   run_test_case "+full/g/words"   "$(echo $output_f_g_w | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
+  hint  "---------------------"
+  run_test_case "+flux/g/chars"   "$(echo $output_x_g_c | join_on_space | is_glimpsed "passing '$tk' to exec unquoted" "")" "1"
+  run_test_case "+flux/g/words"   "$(echo $output_x_g_w | join_on_space | is_glimpsed "passing '$tk' to exec unquoted" "")" "1"
   hint  "-----------------------"
-  run_test_case "+lift/g/chars/+" "$(echo $output_l_g_c | join_on_space | is_glimpsed "runs '$tk'" "")" "1"
-  run_test_case "+lift/g/chars/-" "$(echo $output_l_g_c | join_on_space | is_glimpsed "runs '$tk'" "running '$tk'")" "0"
-  run_test_case "+lift/g/words/+" "$(echo $output_l_g_w | join_on_space | is_glimpsed "runs '$tk'" "")" "1"
-  run_test_case "+lift/g/words/-" "$(echo $output_l_g_w | join_on_space | is_glimpsed "runs '$tk'" "running '$tk'")" "0"
+  run_test_case "+lift/g/chars/+" "$(echo $output_l_g_c | join_on_space | is_glimpsed "passes '$tk' to bash -c" "")" "1"
+  run_test_case "+lift/g/chars/-" "$(echo $output_l_g_c | join_on_space | is_glimpsed "passes '$tk' to bash -c" "passing '$tk' to bash -c")" "0"
+  run_test_case "+lift/g/words/+" "$(echo $output_l_g_w | join_on_space | is_glimpsed "passes '$tk' to bash -c" "")" "1"
+  run_test_case "+lift/g/words/-" "$(echo $output_l_g_w | join_on_space | is_glimpsed "passes '$tk' to bash -c" "passing '$tk' to bash -c")" "0"
   hint  "-----------------------"
   run_test_case ":mark/N/chars"   "$(echo $output_m_N_c | join_on_space | is_near "$m$m" "")" "1"
   run_test_case ":mark/N/words"   "$(echo $output_m_N_c | join_on_space | is_near "$m$m" "")" "1"
@@ -220,7 +227,7 @@ push() {
   hint  "----------------------"
   run_test_case "info/v/full"     "$($0 -v | grep -E "rvry v([0-9]+\.){2}[0-9]+" | wc -l)" "1"
   run_test_case "info/h/form"     "$($0 -h | grep -E "(- rvry v|Usage:|Initial:|Summary:|Context:)" | wc -l)" "5"
-  run_test_case "info/h/ln_c"     "$($0 -h | wc -l)" "34"
+  run_test_case "info/h/ln_c"     "$($0 -h | wc -l)" "36"
   hint  "-------------------"
 
   result="$count_pass/$count_case"
@@ -306,6 +313,11 @@ while (( $arg_i <= ${#} )); do
       lift=true
       ;;
 
+    "--flux"|"-x")
+      # runs any task with exec; cf. function call
+      flux=true
+      ;;
+
     "--task"|"-t")
       # set $task to the value of the next argument
       # or, if a file path, the content of the file
@@ -377,11 +389,12 @@ warn() {
   if [  0  -lt  $edge  ]; then part_path=" and increments a count starting at $path"; part_edge=" or the count reaches $edge"; fi
   if [ -n      "$task" ]; then used_word=$(echo $task | grep $word); fi
   if [ -n "$used_word" ]; then part_word=", w/ '$word' being the full output"; fi
+  if [ -n      "$flux" ]; then part_flux="exec unquoted"; else part_flux="bash -c"; fi
   if [ -n "$tag"  ]; then part_tag=" w/ '$tag'"; fi
   if [ -n "$log"  ]; then part_log=" and appends both w/ a start stamp to '$log'"; fi
 
-  if [ -z "$lift" ] || [ -z "$task" ]; then part_step=" prints ${part_mark}${part_full}"; else part_step=" runs '$task'"; fi
-  if [ -z "$lift" ] && [ -n "$task" ]; then part_task=", before running '$task'"; fi
+  if [ -z "$lift" ] || [ -z "$task" ]; then part_step=" prints ${part_mark}${part_full}"; else part_step=" passes '$task' to ${part_flux}"; fi
+  if [ -z "$lift" ] && [ -n "$task" ]; then part_task=", before passing '$task' to ${part_flux}"; fi
 
   flow="${part_beat}${part_step}${part_path}, until either '${sign}' or Ctrl-C is pressed${part_edge}, then prints the duration${part_tag}${part_log}${part_task}${part_word}"
 
@@ -470,7 +483,12 @@ call() {
   if [ -z "$deep" ] || [ "$2" = "wake" ]; then
     echo "$deed"
   fi
-  bash -c "$deed"
+  if [ -z "$flux" ]; then
+    bash -c "$deed"
+  else
+    tput cnorm # show cursor
+    exec $deed
+  fi
 }
 
 wake() {
