@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rvry v1.24.0
+# rvry v1.24.1
 # ©2022 barcek
 # License: MIT
 # @ github.com
@@ -30,6 +30,11 @@ word=:RVRY # cue for output
 
 cmds_assumed_present_plus=$(echo $(head -n 11 $0 | tail -n 3)\
   | grep -oP "(?<=plus).*$" | tr -d "#,()" | sed 's/ and / /' | tr "AWKG" "awkg")
+
+# set other default values
+
+msg_jolt_slip="No option for flag"
+msg_jolt_void="Absent command"
 
 # define utility functions, general
 
@@ -66,11 +71,10 @@ peer() {
 
   if (( $voids_n > 0 )); then
     # produce one error for all commands
-    root="Absent command"
     case $voids_n in
-      1) $1 "${root} $voids";;
-      2) $1 "${root}s ${voids[0]} and ${voids[1]}";;
-      *) $1 "${root}s $(echo ${voids[@]: 0:${#voids[@]}-1} | sed 's/ /, /g') and ${voids[${#voids[@]}-1]}";;
+      1) $1 "${msg_jolt_void} $voids";;
+      2) $1 "${msg_jolt_void}s ${voids[0]} and ${voids[1]}";;
+      *) $1 "${msg_jolt_void}s $(echo ${voids[@]: 0:${#voids[@]}-1} | sed 's/ /, /g') and ${voids[${#voids[@]}-1]}";;
     esac
   fi
 }
@@ -187,15 +191,15 @@ push() {
     fi
   }
 
-  run_test_case ":mark/g/chars"   "$(echo $output_m_g_c | join_on_space | is_glimpsed "prints '$m'" "passing '$tk' to bash -c")" "1"
-  run_test_case ":mark/g/words"   "$(echo $output_m_g_w | join_on_space | is_glimpsed "prints '$m'" "passing '$tk' to bash -c")" "1"
-  run_test_case "+deep/g/chars"   "$(echo $output_d_g_c | join_on_space | is_glimpsed "prints nothing" "")" "1"
-  run_test_case "+deep/g/words"   "$(echo $output_d_g_w | join_on_space | is_glimpsed "prints nothing" "")" "1"
-  run_test_case "+full/g/chars"   "$(echo $output_f_g_c | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
-  run_test_case "+full/g/words"   "$(echo $output_f_g_w | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
+  run_test_case ":mark/g/chars" "$(echo $output_m_g_c | join_on_space | is_glimpsed "prints '$m'" "passing '$tk' to bash -c")" "1"
+  run_test_case ":mark/g/words" "$(echo $output_m_g_w | join_on_space | is_glimpsed "prints '$m'" "passing '$tk' to bash -c")" "1"
+  run_test_case "+deep/g/chars" "$(echo $output_d_g_c | join_on_space | is_glimpsed "prints nothing" "")" "1"
+  run_test_case "+deep/g/words" "$(echo $output_d_g_w | join_on_space | is_glimpsed "prints nothing" "")" "1"
+  run_test_case "+full/g/chars" "$(echo $output_f_g_c | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
+  run_test_case "+full/g/words" "$(echo $output_f_g_w | join_on_space | is_glimpsed "prints '$m_esc'" "with escaping active")" "1"
   hint  "---------------------"
-  run_test_case "+flux/g/chars"   "$(echo $output_x_g_c | join_on_space | is_glimpsed "passing '$tk' to exec unquoted" "")" "1"
-  run_test_case "+flux/g/words"   "$(echo $output_x_g_w | join_on_space | is_glimpsed "passing '$tk' to exec unquoted" "")" "1"
+  run_test_case "+flux/g/chars" "$(echo $output_x_g_c | join_on_space | is_glimpsed "passing '$tk' to exec unquoted" "")" "1"
+  run_test_case "+flux/g/words" "$(echo $output_x_g_w | join_on_space | is_glimpsed "passing '$tk' to exec unquoted" "")" "1"
   hint  "-----------------------"
   run_test_case "+lift/g/chars/+" "$(echo $output_l_g_c | join_on_space | is_glimpsed "passes '$tk' to bash -c" "")" "1"
   run_test_case "+lift/g/chars/-" "$(echo $output_l_g_c | join_on_space | is_glimpsed "passes '$tk' to bash -c" "passing '$tk' to bash -c")" "0"
@@ -211,24 +215,29 @@ push() {
   run_test_case "+full/N/chars"   "$(echo $output_f_N_c | join_on_space | is_near "$m_esc$m_esc" "")" "1"
   run_test_case "+full/N/words"   "$(echo $output_f_N_w | join_on_space | is_near "$m_esc$m_esc" "")" "1"
   hint  "-----------------------"
-  run_test_case "+lift/N/chars"   "$(echo $output_l_N_c  | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "1"
-  run_test_case "+lift/N/words"   "$(echo $output_l_N_c  | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "1"
-  run_test_case "+l_/d/N/chars"   "$(echo $output_ld_N_c | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "0"
-  run_test_case "+l_/d/N/words"   "$(echo $output_ld_N_c | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "0"
-  hint  "----------------------"
-  run_test_case "message/jolt/1"  "$($0 -i 2>&1 | show_newlines)"       "No option for flag '-i'\n"
-  run_test_case "message/jolt/2"  "$($0 -i -j 2>&1 | show_newlines)"    "No option for flag '-i' or '-j'\n"
-  run_test_case "message/jolt/3"  "$($0 -i -j -k 2>&1 | show_newlines)" "No option for flag '-i', '-j' or '-k'\n"
-  hint  "----------------------"
-  run_test_case "message/peer/0"  "$(peer echo command)" ""
-  run_test_case "message/peer/1"  "$(peer echo command_1)" "Absent command command_1"
-  run_test_case "message/peer/2"  "$(peer echo command_1 command_2)" "Absent commands command_1 and command_2"
-  run_test_case "message/peer/3"  "$(peer echo command_1 command_2 command_3)" "Absent commands command_1, command_2 and command_3"
-  hint  "----------------------"
-  run_test_case "info/v/full"     "$($0 -v | grep -E "rvry v([0-9]+\.){2}[0-9]+" | wc -l)" "1"
-  run_test_case "info/h/form"     "$($0 -h | grep -E "(- rvry v|Usage:|Initial:|Summary:|Context:)" | wc -l)" "5"
-  run_test_case "info/h/ln_c"     "$($0 -h | wc -l)" "36"
-  hint  "-------------------"
+  run_test_case "+lift/N/chars" "$(echo $output_l_N_c  | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "1"
+  run_test_case "+lift/N/words" "$(echo $output_l_N_c  | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "1"
+  run_test_case "+l_/d/N/chars" "$(echo $output_ld_N_c | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "0"
+  run_test_case "+l_/d/N/words" "$(echo $output_ld_N_c | join_on_space | is_near_lift "11:11:11 test TAIL echo HEAD")" "0"
+  hint  "---------------------------"
+  run_test_case "message/jolt/char/1" "$($0 -i             2>&1 | show_newlines)" "$msg_jolt_slip '-i'\n"
+  run_test_case "message/jolt/word/1" "$($0 --i__          2>&1 | show_newlines)" "$msg_jolt_slip '--i__'\n"
+  run_test_case "message/jolt/both/2" "$($0 --i__ -j       2>&1 | show_newlines)" "$msg_jolt_slip '--i__' or '-j'\n"
+  run_test_case "message/jolt/both/3" "$($0 --i__ -j --k__ 2>&1 | show_newlines)" "$msg_jolt_slip '--i__', '-j' or '--k__'\n"
+  hint  "---------------------------"
+  run_test_case "message/peer/0" "$(peer echo command           | show_newlines)" ""
+  run_test_case "message/peer/1" "$(peer echo cmd_1             | show_newlines)" "${msg_jolt_void} cmd_1\n"
+  run_test_case "message/peer/2" "$(peer echo cmd_1 cmd_2       | show_newlines)" "${msg_jolt_void}s cmd_1 and cmd_2\n"
+  run_test_case "message/peer/3" "$(peer echo cmd_1 cmd_2 cmd_3 | show_newlines)" "${msg_jolt_void}s cmd_1, cmd_2 and cmd_3\n"
+  hint  "------------------------"
+  run_test_case "info/v/char/full" "$($0 -v        | grep -E "rvry v([0-9]+\.){2}[0-9]+" | wc -l)" "1"
+  run_test_case "info/v/word/full" "$($0 --version | grep -E "rvry v([0-9]+\.){2}[0-9]+" | wc -l)" "1"
+  hint  "------------------------"
+  run_test_case "info/h/char/form" "$($0 -h     | grep -E "(- rvry v|Usage:|Initial:|Summary:|Context:)" | wc -l)" "5"
+  run_test_case "info/h/char/ln_c" "$($0 -h     | wc -l)" "36"
+  run_test_case "info/h/word/form" "$($0 --help | grep -E "(- rvry v|Usage:|Initial:|Summary:|Context:)" | wc -l)" "5"
+  run_test_case "info/h/word/ln_c" "$($0 --help | wc -l)" "36"
+  hint  "------------------------"
 
   result="$count_pass/$count_case"
   [ $count_pass -eq $count_case ] && ease "✓ $result" || jolt "✕ $result"
@@ -356,11 +365,10 @@ slips_n=${#slips[@]}
 
 if (( $slips_n > 0 )); then
   # produce one error for all flags
-  root="No option for flag"
   case $slips_n in
-    1) jolt "$root $slips";;
-    2) jolt "$root ${slips[0]} or ${slips[1]}";;
-    *) jolt "$root $(echo ${slips[@]: 0:${#slips[@]}-1} | sed 's/ /, /g') or ${slips[${#slips[@]}-1]}";;
+    1) jolt "$msg_jolt_slip $slips";;
+    2) jolt "$msg_jolt_slip ${slips[0]} or ${slips[1]}";;
+    *) jolt "$msg_jolt_slip $(echo ${slips[@]: 0:${#slips[@]}-1} | sed 's/ /, /g') or ${slips[${#slips[@]}-1]}";;
   esac
 fi
 
