@@ -4,6 +4,8 @@ Mark time passing in the terminal.
 
 Highly configurable by flag, with a flow description option and self-test. Can be passed a tag to label the duration and a path to log the whole with date and time to a file, plus a Bash command to be run at each step or on completion.
 
+Available over an Alpine base image via the Dockerfile in [shipping](https://github.com/barcek/shipping).
+
 ## Why?
 
 To track the durations of regular activities, see a measure of time taken on a task so far, or delay one, or zone out with a subtle visual beat.
